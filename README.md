@@ -49,25 +49,6 @@ Make sure to configure your environment variables as needed. Don't forget to put
 ```bash
 php artisan key:generate
 ```
-## 🛠️ MySQL configuration (startup)
-
-To ensure that Laravel can correctly connect to MySQL 8 using the `mysql_native_password` plugin, follow the steps below:
-
-### 1. Creating the startup folder and file
-
-Create the `mysql-init` folder in the project root:
-
-```bash
-mkdir mysql-init
-```
-Inside the folder, create a file called init.sql with the following content:
-
-```bash
-ALTER USER 'user'@'%' IDENTIFIED WITH mysql_native_password BY 'SUA_SENHA_AQUI';
-FLUSH PRIVILEGES;
-```
-
-Replace YOUR_PASSWORD_HERE with the password defined in the MYSQL_PASSWORD variable of your docker-compose.yml.
 
 ### 3. Start the Database
 The project uses PostgreSQL as the database, managed via Docker for convenience. To start the database, run:
