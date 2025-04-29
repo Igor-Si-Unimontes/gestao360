@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:100,200,300400,500,600,700,800,900"
           rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
 
 
     <!-- Styles / Scripts -->
@@ -17,9 +18,9 @@
 <body class="h-full">
 
 
-<main class="flex min-h-full flex-col justify-center px-4 py-12 lg:px-8 gap-y-8">
+<main class="flex min-h-full flex-col justify-center  bg-white">
     {{ $slot }}
-</main>
+</main>   
 
 
 </body>
