@@ -1,9 +1,6 @@
-# Custom Auth Laravel - Starter Kit
-Deploy your own Laravel website in minutes with a full custom system and design.
-
-## Intro
-This repository provides a solid foundation for starting Laravel projects with fully customizable authentication systems. <br>
-Perfect for those who prefer not to use pre-existing packages like Fortify or Breeze and want to build a tailored solution from scratch.
+# System PDV - TCC
+This TCC project focuses on developing a point of sale (PDV) system tailored for rural areas, aiming to streamline sales, </br>
+inventory, and administrative processes in small businesses.
 
 ## Features
 <ul>
