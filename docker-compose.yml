@@ -1,0 +1,50 @@
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel_app
+    volumes:
+      - .:/var/www
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    networks:
+      - laravel
+    command: ["sh", "-c", "until mysql -h db -u user -psecret gestao360; do echo 'Waiting for MySQL...'; sleep 2; done; php artisan serve --host=0.0.0.0 --port=8000"]
+
+
+  vite:
+    image: node:18
+    container_name: vite_dev
+    working_dir: /var/www
+    command: ["npm", "run", "dev"]
+    volumes:
+      - .:/var/www
+    ports:
+      - "5173:5173"
+    networks:
+      - laravel
+
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    environment:
+      MYSQL_DATABASE: gestao360
+      MYSQL_USER: user
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3316:3306"
+    volumes:
+      - mysqldata:/var/lib/mysql
+    networks:
+      - laravel
+
+networks:
+  laravel:
+
+volumes:
+  mysqldata:
