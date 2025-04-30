@@ -1,0 +1,97 @@
+@import "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css";
+
+:root {
+    --bs-font-sans-serif: 'Montserrat', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+    --bs-white: #fff;
+    --bs-purple: #7212E7;
+    --bs-black-700: #1B1B1B;
+    --bs-gray-400: #797878;
+    --bs-gray-label: #5D5656;
+    --bs-gray-input: #C2BEBE;
+    --bs-laravel-black-900: #111110;
+    --bs-laravel-black-100: #222221;
+    --bs-laravel-yellow-100: #DEE33E;
+    --bs-laravel-yellow-200: #C4C72F;
+    --bs-laravel-yellow-300: #9FA324;
+    --bs-laravel-gray-100: #F3F4F6;
+    --bs-laravel-gray-200: #D1D5DB;
+    --bs-laravel-gray-300: #9CA3AF;
+}
+
+/* Fonte global */
+body {
+    font-family: var(--bs-font-sans-serif);
+}
+
+/* Cores de fundo personalizadas */
+.bg-purple {
+    background-color: var(--bs-purple);
+}
+.bg-laravel-black-900 {
+    background-color: var(--bs-laravel-black-900);
+}
+.bg-laravel-yellow-100 {
+    background-color: var(--bs-laravel-yellow-100);
+}
+.bg-laravel-yellow-200 {
+    background-color: var(--bs-laravel-yellow-200);
+}
+.bg-laravel-yellow-300 {
+    background-color: var(--bs-laravel-yellow-300);
+}
+
+
+/* Cores de texto personalizadas */
+.text-purple {
+    color: var(--bs-purple);
+}
+.text-laravel-yellow-100 {
+    color: var(--bs-laravel-yellow-100);
+}
+.text-black-700 {
+    color: var(--bs-black-700);
+}
+.text-gray {
+    color: var(--bs-gray-400);
+}
+.text-gray-label {
+    color: var(--bs-gray-label);
+}
+
+
+
+
+/* Estilos adicionais */
+.card-rounded {
+    border-radius: 1.5rem; /* rounded-4 */
+}
+
+.btn-yellow {
+    background-color: var(--bs-laravel-yellow-100);
+    color: var(--bs-black-700);
+    font-weight: 600;
+}
+.btn-yellow:hover {
+    background-color: var(--bs-laravel-yellow-200);
+}
+
+.btn-purple {
+    background-color: var(--bs-purple);
+    color: var(--bs-white);
+    font-weight: 400;
+    border-radius: 8px;
+    padding: 8px;
+}
+.btn-purple:hover {
+    background-color: var(--bs-purple);
+    color: var(--bs-white);
+}
+/* Ajustes gerais */
+.form-control-light {
+    background-color: var(--bs-laravel-gray-100);
+    color: var(--bs-black-700);
+}
+input::placeholder {
+    color: #C2BEBE !important;
+}

@@ -26,20 +26,16 @@ class AuthController extends Controller
         $credentials = $request->validate(
             [
                 'email' => ['required', 'email', 'max:100'],
-                'password' => ['required', 'min:8', 'max:32', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/']
+                'password' => ['required']
             ],
             [
                 'email.required' => 'O campo email é obrigatório.',
                 'email.email' => 'O campo email deve ser um email válido.',
                 'email.max' => 'O campo email deve ter no máximo 100 caracteres.',
                 'password.required' => 'O campo senha é obrigatório.',
-                'password.min' => 'O campo senha deve ter no mínimo :min caracteres.',
-                'password.max' => 'O campo senha deve ter no máximo :max caracteres.',
-                'password.regex' => 'O campo senha deve conter pelo menos uma letra maiúscula, uma letra minúscula e um número.'
             ]
         );
 
-        // Verifica se user existe
         $user = User::where('email', $credentials['email'])
             ->where('active', true)
             ->where(function ($query) {
@@ -52,14 +48,14 @@ class AuthController extends Controller
 
         if (!$user) {
             return back()->withInput()->with([
-                'invalid_login' => 'Login inválido.'
+                'invalid_login' => 'Usuario ou senha inválidos.'
             ]);
         }
 
         // Verifica se a password é válida
         if (!password_verify($credentials['password'], $user->password)) {
             return back()->withInput()->with([
-                'invalid_login' => 'Login inválido.'
+                'invalid_login' => 'Usuario ou senha inválidos.'
             ]);
         }
 
