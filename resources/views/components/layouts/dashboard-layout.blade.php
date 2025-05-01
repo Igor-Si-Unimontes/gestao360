@@ -1,48 +1,81 @@
 <!doctype html>
-<html lang="en" class="h-full bg-laravel-black-100">
+<html lang="pt-BR" class="h-100">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $pageTitle  }}</title>
+    <title>@yield('title', 'Título da página')</title>
 
-    <!-- Fonts -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=instrument-sans:100,200,300400,500,600,700,800,900"
-          rel="stylesheet"/>
+    <link href="https://fonts.bunny.net/css?family=instrument-sans:100,200,300,400,500,600,700,800,900" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
 
-
-    <!-- Styles / Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/fontawesome/all.min.js'])
+    @vite([
+        'resources/css/app.css', 
+        'resources/css/appbs.css', 
+        'resources/js/app.js', 
+        'resources/fontawesome/all.min.js'
+    ])
 </head>
-<body class="h-full">
 
-<div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-    <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-laravel-black-900 px-6">
-        <div class="flex h-16 items-center justify-between">
-            <p class="text-white">
-                Olá, {{ Auth::user()->first_name }}
-            </p>
-            <a href="{{ route('logout') }}">
-                <i class="fa-solid fa-right-from-bracket text-red-500 h-6 w-6"></i>
-            </a>
+<body style="background-color: #f5f5f5; font-family: 'Montserrat', sans-serif;" class="h-100">
+
+<div class="container-fluid p-0">
+    <div class="row g-0">
+        <nav class="col-md-3 col-lg-2 d-md-block bg-white sidebar p-0 vh-100">
+            <div class="position-sticky d-flex flex-column h-100">
+                <div class="d-flex justify-content-between align-items-center p-3">
+                    <img src="{{ asset('images/logo.webp') }}" alt="logo">
+                </div>
+
+                <div class="flex-grow-1 overflow-auto p-1">
+                    <x-dashboard-nav/>
+                </div>
+
+                <div class="border-top mt-4">
+                    <a href="{{ route('logout') }}" 
+                       class="d-flex align-items-center gap-3 p-3 rounded bg-red-sidebar text-red text-decoration-none"
+                       style="font-size: 1.1rem;">
+                       <i class="fas fa-sign-out-alt"></i>
+                       <span>Encerrar sessão</span>
+                    </a>
+                </div>                
+            </div>
+        </nav>
+
+        <div class="col-md-9 ms-sm-auto col-lg-10 d-flex flex-column vh-100">
+    
+            <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+                <div class="container-fluid px-4 p-3" style="margin-right: 25px "> 
+                    <div class="d-flex align-items-center ms-auto">
+                        <div class="text-end me-3">
+                            <div style=" color #3C3D37; font-size: 16px; font-weight: 500; line-height: 17px;">
+                                Olá, {{ Auth::user()->first_name . ' ' . Auth::user()->last_name }}
+                            </div>
+                            <div style="color: #7212E7; font-size: 14px; font-weight: 700;">
+                                {{ Auth::user()->role ?? 'Cargo' }}
+                            </div>
+                        </div>
+        
+                        <div class="avatar rounded-circle overflow-hidden" style="width: 45px; height: 45px;">
+                            <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->first_name) }}&background=7212E7&color=fff&size=128" 
+                                 alt="Avatar" 
+                                 class="img-fluid h-100 w-100 object-fit-cover">
+                        </div>
+        
+                    </div>
+                </div>
+            </nav>
+        
+            <div class="container-fluid">
+                @yield('content')
+            </div>
+        
         </div>
-
-        <x-dashboard-nav/>
-
-        <a href="{{ route('profile') }}"
-           class="text-white hover:bg-laravel-yellow-100/90 hover:text-white group flex items-center gap-x-3 rounded-md py-3 px-2 w-full text-sm font-semibold mb-4">
-            <i class="fa-solid fa-gear text-laravel-yellow-100 group-hover:text-white h-6 w-6"></i>
-            Settings
-        </a>
+        
     </div>
 </div>
-
-
-<main class="py-10 lg:pl-72 text-white">
-    <div class="px-4 sm:px-6 lg:px-8">
-        {{ $slot }}
-    </div>
-</main>
 
 </body>
 </html>

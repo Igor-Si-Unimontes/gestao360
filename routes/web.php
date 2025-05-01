@@ -5,6 +5,7 @@ use App\Http\Controllers\UserController;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\EmployeesController;
 
 // Rotas para usuários não autenticados
 Route::middleware('guest')->group(function () {
@@ -31,6 +32,9 @@ Route::middleware('auth')->group(function () {
         return view('home');
     })->name('dashboard');
 
+    // Employees
+    Route::get('/funcionarios', [EmployeesController::class, 'index'])->name('employees.index');
+    //outra rota
     Route::get('/profile', function () {
         return view('auth.profile');
     })->name('profile');

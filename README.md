@@ -65,14 +65,16 @@ php artisan migrate
 
 If the database does not exist, only select 'yes' to create it.
 
-### 5. Start Website
-To run the website, both the frontend and backend need to be running simultaneously in separate terminals:
+### 5. Run Seeders
+Apply the seeders:
 ```bash
-npm run dev
+php artisan db:seed --class=RoleSeeder
 ```
 
+### 5. Start Apllication
+To run the website, we need to enable docker for the services to work.
 ```bash
-php artisan serve
+docker compose up -d
 ```
 
 ## How to View Emails?

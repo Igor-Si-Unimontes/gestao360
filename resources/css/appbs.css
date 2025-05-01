@@ -9,6 +9,10 @@
     --bs-gray-400: #797878;
     --bs-gray-label: #5D5656;
     --bs-gray-input: #C2BEBE;
+    --bs-gray-sidebar: #333333;
+    --bs-purple-bg-sidebar: #7212E70D;
+    --bs-red-sidebar: #F03D3D;
+    --bs-red-bg-sidebar: #F03D3D1A;
     --bs-laravel-black-900: #111110;
     --bs-laravel-black-100: #222221;
     --bs-laravel-yellow-100: #DEE33E;
@@ -40,7 +44,12 @@ body {
 .bg-laravel-yellow-300 {
     background-color: var(--bs-laravel-yellow-300);
 }
-
+.bg-purple-sidebar {
+    background-color: var(--bs-purple-bg-sidebar);
+}
+.bg-red-sidebar {
+    background-color: var(--bs-red-bg-sidebar);
+}
 
 /* Cores de texto personalizadas */
 .text-purple {
@@ -58,8 +67,14 @@ body {
 .text-gray-label {
     color: var(--bs-gray-label);
 }
-
-
+.text-gray-sidebar {
+    color: var(--bs-gray-sidebar);
+    font-size: 14px;
+    font-family: 400;
+}
+.text-red {
+    color: var(--bs-red-sidebar);
+}
 
 
 /* Estilos adicionais */

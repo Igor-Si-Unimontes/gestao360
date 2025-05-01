@@ -29,4 +29,14 @@ class User extends Authenticable
         'password',
         'token'
     ];
+
+    public function employees()
+    {
+        return $this->hasOne(Employee::class);
+    }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
 }

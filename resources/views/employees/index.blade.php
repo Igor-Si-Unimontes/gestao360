@@ -1,10 +1,10 @@
 @extends('components.layouts.dashboard-layout')
 
-@section('title', 'Home')
+@section('title', 'Funcionários')
 
 @section('content')
 <div class="container border rounded bg-white">
-    <p>Home</p>
+    <p>Funcionarios</p>
     <button class="btn btn-primary">alou</button>
 </div>
 
