@@ -34,6 +34,12 @@ Route::middleware('auth')->group(function () {
 
     // Employees
     Route::get('/funcionarios', [EmployeesController::class, 'index'])->name('employees.index');
+    Route::get('/funcionarios/create', [EmployeesController::class, 'create'])->name('employees.create');
+    Route::post('/funcionarios', [EmployeesController::class, 'store'])->name('employees.store');
+    Route::get('/funcionarios/{id}/edit', [EmployeesController::class, 'edit'])->name('employees.edit');
+    Route::put('/funcionarios/{id}', [EmployeesController::class, 'update'])->name('employees.update');
+    Route::delete('/funcionarios/{id}', [EmployeesController::class, 'destroy'])->name('employees.destroy');
+
     //outra rota
     Route::get('/profile', function () {
         return view('auth.profile');

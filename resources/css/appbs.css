@@ -102,6 +102,20 @@ body {
     background-color: var(--bs-purple);
     color: var(--bs-white);
 }
+.btn-purple-main {
+    background-color: var(--bs-purple);
+    color: var(--bs-white);
+    font-weight: 400;
+    border-radius: 8px;
+    padding-top: 10px;
+    padding-bottom:10px;
+    padding-left: 50px;
+    padding-right: 50px;
+}
+.btn-purple-main:hover {
+    background-color: var(--bs-purple);
+    color: var(--bs-white);
+}
 /* Ajustes gerais */
 .form-control-light {
     background-color: var(--bs-laravel-gray-100);

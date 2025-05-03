@@ -10,4 +10,8 @@ class EmployeesController extends Controller
     {
         return view('employees.index');
     }
+    public function create()
+    {
+        return view('employees.create');
+    }
 }
