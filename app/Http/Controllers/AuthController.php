@@ -36,26 +36,26 @@ class AuthController extends Controller
             ]
         );
 
+        // Busca o usuário apenas verificando se está ativo e não bloqueado
         $user = User::where('email', $credentials['email'])
             ->where('active', true)
             ->where(function ($query) {
                 $query->whereNull('blocked_until')
                     ->orWhere('blocked_until', '<=', now());
             })
-            ->whereNotNull('email_verified_at')
             ->whereNull('deleted_at')
             ->first();
 
         if (!$user) {
             return back()->withInput()->with([
-                'invalid_login' => 'Usuario ou senha inválidos.'
+                'invalid_login' => 'Usuário ou senha inválidos.'
             ]);
         }
 
-        // Verifica se a password é válida
+        // Verifica se a senha é válida
         if (!password_verify($credentials['password'], $user->password)) {
             return back()->withInput()->with([
-                'invalid_login' => 'Usuario ou senha inválidos.'
+                'invalid_login' => 'Usuário ou senha inválidos.'
             ]);
         }
 
@@ -72,6 +72,7 @@ class AuthController extends Controller
         return redirect()->intended(route('dashboard'));
     }
 
+
     public function logout(): RedirectResponse
     {
         Auth::logout();
@@ -83,21 +84,19 @@ class AuthController extends Controller
         return view('auth.register');
     }
 
-    public function storeUser(Request $request): RedirectResponse|View
+    public function storeUser(Request $request): User
     {
         $request->validate(
             [
-                'first_name' => ['required', 'max:100'],
-                'last_name' => ['required', 'max:100'],
+                'name' => ['required', 'max:100'],
                 'email' => ['required', 'email', 'max:100', 'unique:users,email'],
                 'password' => ['required', 'min:8', 'max:32', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/'],
-                'password_confirmation' => ['required', 'same:password']
+                'password_confirmation' => ['required', 'same:password'],
+                'role_id' => ['required', 'integer'],
             ],
             [
-                'first_name.required' => 'O campo nome é obrigatório.',
-                'first_name.max' => 'O campo nome deve ter no máximo :max caracteres.',
-                'last_name.required' => 'O campo sobrenome é obrigatório.',
-                'last_name.max' => 'O campo sobrenome deve ter no máximo :max caracteres.',
+                'name.required' => 'O campo nome é obrigatório.',
+                'name.max' => 'O campo nome deve ter no máximo :max caracteres.',
                 'email.required' => 'O campo email é obrigatório.',
                 'email.email' => 'O campo email deve ser um email válido.',
                 'email.max' => 'O campo email deve ter no máximo :max caracteres.',
@@ -107,37 +106,22 @@ class AuthController extends Controller
                 'password.max' => 'O campo senha deve ter no máximo :max caracteres.',
                 'password.regex' => 'O campo senha deve conter pelo menos uma letra maiúscula, uma letra minúscula e um número.',
                 'password_confirmation.required' => 'O campo confirmação de senha é obrigatório.',
-                'password_confirmation.same' => 'O campo confirmação de senha deve ser igual ao campo senha.'
+                'password_confirmation.same' => 'O campo confirmação de senha deve ser igual ao campo senha.',
+                'role_id.required' => 'O campo perfil é obrigatório.',
+                'role_id.integer' => 'O campo perfil deve ser um número válido.'
             ]
         );
 
         $user = new User();
-        $user->first_name = $request->first_name;
-        $user->last_name = $request->last_name;
+        $user->first_name = $request->name;
+        $user->last_name = '';
+        $user->role_id = $request->role_id;
         $user->email = $request->email;
         $user->password = bcrypt($request->password);
-
-        // Cria o token de verificação de email
-        $user->token = Str::random(64);
-
-        // Gerar link de confirmação e passa para dentro do email (que será enviado) que é uma view
-        $confirmation_link = route('newUserConfirmation', ['token' => $user->token]);
-
-        // Enviar email
-        $result = Mail::to($user->email)
-            ->send(new NewUserConfirmation($user->first_name, $confirmation_link));
-
-        if (!$result) {
-            return back()->withInput()->with([
-                'server_error' => 'Erro ao enviar email de confirmação.'
-            ]);
-        }
-
-        // Salva o usuário
+        $user->active = 1;
         $user->save();
 
-        // Redireciona após cadastro
-        return view('auth.email_sent', ['email' => $user->email]);
+        return $user;
     }
 
     public function newUserConfirmation($token): RedirectResponse|View

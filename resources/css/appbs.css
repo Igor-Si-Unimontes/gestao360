@@ -5,6 +5,7 @@
 
     --bs-white: #fff;
     --bs-purple: #7212E7;
+    --bs-red: #DC2626;
     --bs-black-700: #1B1B1B;
     --bs-gray-400: #797878;
     --bs-gray-label: #5D5656;
@@ -13,6 +14,7 @@
     --bs-purple-bg-sidebar: #7212E70D;
     --bs-red-sidebar: #F03D3D;
     --bs-red-bg-sidebar: #F03D3D1A;
+    --bs-gray-form-control: #A9A2A2;
     --bs-laravel-black-900: #111110;
     --bs-laravel-black-100: #222221;
     --bs-laravel-yellow-100: #DEE33E;
@@ -115,6 +117,22 @@ body {
 .btn-purple-main:hover {
     background-color: var(--bs-purple);
     color: var(--bs-white);
+}
+.btn-cancelar {
+    background-color: var(--bs-white);
+    color: var(--bs-red);
+    font-weight: 500;
+    border-color: var(--bs-red);
+    border-radius: 8px;
+    padding: 8px;
+}
+.btn-cancelar:hover {
+    background-color: var(--bs-red);
+    color: var(--bs-white);
+    font-weight: 500;
+    border-color: var(--bs-red);
+    border-radius: 8px;
+    padding: 8px;
 }
 /* Ajustes gerais */
 .form-control-light {

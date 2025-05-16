@@ -70,6 +70,8 @@
         
             <div class="container-fluid">
                 @yield('content')
+                @yield('styles')
+                @yield('scripts')
             </div>
         
         </div>
