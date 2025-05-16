@@ -100,7 +100,7 @@
             </div>
             <div class="row" style="margin-top: 80px;">
                 <div class="col-3">
-                    <button class="btn btn-cancelar w-100" style="font-size: 18px; font-weight: 500;">Cancelar</button>
+                    <a href="{{ route('employees.index') }}" class="btn btn-cancelar w-100" style="font-size: 18px; font-weight: 500;">Cancelar</a>
                 </div>
                 <div class="col-3">
                     <button type="submit" class="btn btn-purple w-100" style="font-size: 18px; font-weight: 400;">Adicionar</button>
