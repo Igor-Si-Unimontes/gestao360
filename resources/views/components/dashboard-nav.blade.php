@@ -14,9 +14,9 @@
 
         <li class="nav-item">
             <a href="{{ route('employees.index') }}"
-            class="nav-link {{ request()->routeIs('employees.index') ? 'active bg-purple-sidebar text-purple-active' : 'bg-white text-gray-sidebar' }} rounded-0 px-4 py-3 w-100 d-flex align-items-center group"
-               style="{{ request()->routeIs('employees.index') ? 'border-left: 4px solid #7212E7; color: #7212E7;' : '' }}">
-                <i class="fas fa-users me-3 group-hover:text-[#7212E7]" style="{{ request()->routeIs('employees.index') ? 'color: #7212E7;' : '' }}"></i> 
+            class="nav-link {{ request()->routeIs('employees.*') ? 'active bg-purple-sidebar text-purple-active' : 'bg-white text-gray-sidebar' }} rounded-0 px-4 py-3 w-100 d-flex align-items-center group"
+               style="{{ request()->routeIs('employees.*') ? 'border-left: 4px solid #7212E7; color: #7212E7;' : '' }}">
+                <i class="fas fa-users me-3 group-hover:text-[#7212E7]" style="{{ request()->routeIs('employees.*') ? 'color: #7212E7;' : '' }}"></i> 
                 <span class="group-hover:text-[#7212E7]">
                     Funcionários
                 </span>
