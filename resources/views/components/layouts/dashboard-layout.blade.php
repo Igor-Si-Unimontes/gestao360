@@ -51,10 +51,10 @@
                     <div class="d-flex align-items-center ms-auto">
                         <div class="text-end me-3">
                             <div style=" color #3C3D37; font-size: 16px; font-weight: 500; line-height: 17px;">
-                                Olá, {{ Auth::user()->first_name . ' ' . Auth::user()->last_name }}
+                                Olá, {{ Auth::user()->first_name }}
                             </div>
                             <div style="color: #7212E7; font-size: 14px; font-weight: 700;">
-                                {{ Auth::user()->role ?? 'Cargo' }}
+                                {{ Auth::user()->role->name ?? 'Cargo' }}
                             </div>
                         </div>
         
