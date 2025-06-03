@@ -16,7 +16,8 @@ class EmployeesController extends Controller
     }
     public function index()
     {
-        return view('employees.index');
+        $employees = $this->service->getAll();
+        return view('employees.index', compact('employees'));
     }
     public function create()
     {
@@ -39,6 +40,44 @@ class EmployeesController extends Controller
         $this->service->store($validated);
     
         return redirect()->route('employees.index')->with('success', 'Funcionário criado com sucesso!');
+    }
+    public function edit($id)
+    {
+        $employees = $this->service->find($id);
+        $roles = Role::all();
+
+        return view('employees.edit', compact('employees', 'roles'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $employee = $this->service->find($id);
+        $user = $employee->user;
+
+        $validated = $request->validate([
+            'name'  => 'required|string|max:80',
+            'phone' => 'required|string|max:20',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'role_id' => 'required|exists:roles,id',
+        ]);
+
+        $user->email = $validated['email'];
+        $user->role_id = $validated['role_id'];
+
+        if ($request->filled('password')) {
+            $request->validate([
+                'password' => 'required|string|min:6|confirmed',
+            ]);
+            $user->password = bcrypt($request->password);
+        }
+        $user->save();
+
+        $this->service->update($id, [
+            'name' => $validated['name'],
+            'phone' => $validated['phone'],
+        ]);
+
+        return redirect()->route('employees.index')->with('success', 'Funcionário atualizado com sucesso!');
     }
     
 }
