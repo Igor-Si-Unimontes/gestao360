@@ -3,7 +3,7 @@
 @section('title', 'Funcionários')
 
 @section('content')
-    <x-layouts.breadcrumb title="Novo Funcionário" :breadcrumbs="[
+    <x-layouts.breadcrumb title="Editar Dados Do Funcionário" :breadcrumbs="[
         ['name' => 'Funcionários', 'route' => 'employees.index'],
         ['name' => 'Editar Dados Do Funcionário'],
     ]">
