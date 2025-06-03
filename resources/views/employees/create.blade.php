@@ -46,32 +46,34 @@
                 </div>
                 <div class="col-6">
                     <label for="role_id" class="form-label text-gray-label mt-4">Permissão*</label>
-                
+
                     <div class="position-relative" style="position: relative;">
                         <select name="role_id" id="role_id" class="form-control p-3"
                             style="opacity: 0; position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 2;">
                             <option value="">Selecione a permissão</option>
                             @foreach ($roles as $role)
                                 @php
-                                    $roleCode = strtolower(str_replace(
-                                        ['ç', 'ã', 'á', 'â', 'é', 'ê', 'í', 'ó', 'ô', 'ú', ' '],
-                                        ['c', 'a', 'a', 'a', 'e', 'e', 'i', 'o', 'o', 'u', '-'],
-                                        $role->name
-                                    ));
+                                    $roleCode = strtolower(
+                                        str_replace(
+                                            ['ç', 'ã', 'á', 'â', 'é', 'ê', 'í', 'ó', 'ô', 'ú', ' '],
+                                            ['c', 'a', 'a', 'a', 'e', 'e', 'i', 'o', 'o', 'u', '-'],
+                                            $role->name,
+                                        ),
+                                    );
                                 @endphp
-                                <option value="{{ $role->id }}" data-role-code="{{ $roleCode }}">{{ $role->name }}</option>
+                                <option value="{{ $role->id }}" data-role-code="{{ $roleCode }}">{{ $role->name }}
+                                </option>
                             @endforeach
                         </select>
-                    
-                        <div id="visual-role"
-                            class="form-control d-flex align-items-center justify-content-between pe-3"
+
+                        <div id="visual-role" class="form-control d-flex align-items-center justify-content-between pe-3"
                             style="pointer-events: none;">
                             <span id="badge-text" class="text-muted">Selecione a permissão</span>
                             <span>v</span>
                         </div>
                     </div>
-                    
-                </div>           
+
+                </div>
             </div>
 
             <div class="row">
@@ -100,10 +102,12 @@
             </div>
             <div class="row" style="margin-top: 80px;">
                 <div class="col-3">
-                    <a href="{{ route('employees.index') }}" class="btn btn-cancelar w-100" style="font-size: 18px; font-weight: 500;">Cancelar</a>
+                    <a href="{{ route('employees.index') }}" class="btn btn-cancelar w-100"
+                        style="font-size: 18px; font-weight: 500;">Cancelar</a>
                 </div>
                 <div class="col-3">
-                    <button type="submit" class="btn btn-purple w-100" style="font-size: 18px; font-weight: 400;">Adicionar</button>
+                    <button type="submit" class="btn btn-purple w-100"
+                        style="font-size: 18px; font-weight: 400;">Adicionar</button>
                 </div>
             </div>
         </form>
@@ -111,78 +115,92 @@
 @endsection
 
 @section('styles')
-<style>
-    #visual-role {
-        min-height: 58px; 
-        padding: 12px 16px;
-        font-size: 14px;
-        font-weight: 400;
-        border-radius: 6px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        overflow: hidden;
-        line-height: 1;
-    }
+    <style>
+        #visual-role {
+            min-height: 58px;
+            padding: 12px 16px;
+            font-size: 14px;
+            font-weight: 400;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            overflow: hidden;
+            line-height: 1;
+        }
 
-    .role-badge-text {
-        border-radius: 20px;
-        padding: 4px 12px;
-        font-size: 14px;
-        font-weight: 400;
-        white-space: nowrap;
-    }
+        .role-badge-text {
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 14px;
+            font-weight: 400;
+            white-space: nowrap;
+        }
 
-    .role-admin {
-        background-color: #333333;
-        color: #ffffff;
-    }
+        .role-admin {
+            background-color: #333333;
+            color: #ffffff;
+        }
 
-    .role-garcom {
-        background-color: #ECD686;
-        color: #222222;
-    }
+        .role-garcom {
+            background-color: #ECD686;
+            color: #222222;
+        }
 
-    .role-caixa {
-        background-color: #F8DCD3;
-        color: #222222;
-    }
+        .role-caixa {
+            background-color: #F8DCD3;
+            color: #222222;
+        }
 
-    .role-atendente {
-        background-color: #EABDBD;
-        color: #222222;
-    }
-</style>
+        .role-atendente {
+            background-color: #EABDBD;
+            color: #222222;
+        }
+    </style>
 
 @endsection
 @section('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const select = document.getElementById('role_id');
-        const badgeText = document.getElementById('badge-text');
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const select = document.getElementById('role_id');
+            const badgeText = document.getElementById('badge-text');
 
-        const roleClasses = {
-            'administrador': 'role-admin',
-            'garcom': 'role-garcom',
-            'caixa': 'role-caixa',
-            'atendente': 'role-atendente',
-        };
+            const roleClasses = {
+                'administrador': 'role-admin',
+                'garcom': 'role-garcom',
+                'caixa': 'role-caixa',
+                'atendente': 'role-atendente',
+            };
 
-        select.addEventListener('change', function () {
-            const selected = select.options[select.selectedIndex];
-            const roleCode = selected.getAttribute('data-role-code');
-            const roleName = selected.text.trim();
+            select.addEventListener('change', function() {
+                const selected = select.options[select.selectedIndex];
+                const roleCode = selected.getAttribute('data-role-code');
+                const roleName = selected.text.trim();
 
-            badgeText.className = 'role-badge-text';
+                badgeText.className = 'role-badge-text';
 
-            if (roleCode && roleClasses[roleCode]) {
-                badgeText.textContent = roleName;
-                badgeText.classList.add(roleClasses[roleCode]);
-            } else {
-                badgeText.textContent = 'Selecione a permissão';
-                badgeText.className = 'text-muted';
-            }
+                if (roleCode && roleClasses[roleCode]) {
+                    badgeText.textContent = roleName;
+                    badgeText.classList.add(roleClasses[roleCode]);
+                } else {
+                    badgeText.textContent = 'Selecione a permissão';
+                    badgeText.className = 'text-muted';
+                }
+            });
         });
-    });
-</script>
+        const phoneInput = document.getElementById('phone');
+
+        phoneInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, ''); // remove tudo que não é número
+
+            if (value.length > 11) value = value.slice(0, 11);
+
+            if (value.length > 2 && value.length <= 6) {
+                value = `(${value.slice(0,2)}) ${value.slice(2)}`;
+            } else if (value.length > 6) {
+                value = `(${value.slice(0,2)}) ${value.slice(2,7)}-${value.slice(7)}`;
+            }
+            e.target.value = value;
+        });
+    </script>
 @endsection
