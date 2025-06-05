@@ -3,13 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticable;
 
 class User extends Authenticable
 {
-    // Serve para usar o SoftDeletes
-    use SoftDeletes;
 
     protected $fillable = [
         'first_name',
@@ -25,7 +22,6 @@ class User extends Authenticable
     ];
 
 
-    // atributos que serão escondidos ao retornar o objeto
     protected $hidden = [
         'password',
         'token'
