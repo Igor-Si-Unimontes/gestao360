@@ -52,19 +52,15 @@
                                     <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>
                                 </svg>
                             </a>
-                            <form action="{{ route('employees.destroy', $employee->id) }}" method="POST" style="display:inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-sm" style="color: #7212E7;" title="Remover" onclick="return confirm('Tem certeza que deseja excluir este funcionário?');">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="lucide" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7212E7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <polyline points="3 6 5 6 21 6"></polyline>
-                                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
-                                        <path d="M10 11v6"></path>
-                                        <path d="M14 11v6"></path>
-                                        <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
-                                    </svg>
-                                </button>
-                            </form>
+                            <a href="#" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#deleteEmployeeModal-{{ $employee->id }}" style="color: #7212E7;" title="Visualizar">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="lucide" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7212E7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                                    <path d="M10 11v6"></path>
+                                    <path d="M14 11v6"></path>
+                                    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+                                </svg>
+                            </a>
                         </td>                                                                                           
                     </tr>
                     <div class="modal fade" id="showEmployeeModal-{{ $employee->id }}" tabindex="-1" aria-labelledby="showEmployeeModalLabel" aria-hidden="true">
@@ -87,11 +83,32 @@
                               </div>
                             </div>
                             <div class="modal-footer">
-                              <button type="button" data-bs-dismiss="modal" class="btn btn-cancelar-vermelho" style="hover: none;">Cancelar</button>
+                              <button type="button" data-bs-dismiss="modal" class="btn btn-cancelar-vermelho">Cancelar</button>
                             </div>
                           </div>
                         </div>
-                      </div>
+                    </div>
+                    <div class="modal fade" id="deleteEmployeeModal-{{ $employee->id }}" tabindex="-1" aria-labelledby="deleteEmployeeModalLabel-{{ $employee->id }}" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="deleteEmployeeModalLabel-{{ $employee->id }}">Confirmar Exclusão</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Tem certeza que deseja excluir o funcionário <strong>{{ $employee->name }}</strong>? Esta ação não poderá ser desfeita.
+                                </div>
+                                <div class="modal-footer">
+                                    <form action="{{ route('employees.destroy', $employee->id) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-cancelar-vermelho">Sim, excluir</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 @endforeach
             </tbody>
         </table>
