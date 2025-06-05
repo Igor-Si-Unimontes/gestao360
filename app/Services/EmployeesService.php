@@ -30,11 +30,6 @@ class EmployeesService
 
     public function delete(int $id)
     {
-        $employees = $this->repository->find($id);
-        if(!$employees)
-        {
-            throw new Exception("Funcionário nâo encontrado !");
-        }
         return $this->repository->delete($id);
     }
 
