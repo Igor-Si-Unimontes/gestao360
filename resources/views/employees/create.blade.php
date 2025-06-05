@@ -16,7 +16,7 @@
             <div class="row">
                 <div class="col-6">
                     <label for="name" class="form-label text-gray-label mt-4">Nome*</label>
-                    <input type="text" name="name" id="name" required
+                    <input type="text" name="name" id="name" value="{{ old('name') }}" required
                         class="form-control p-3 @error('name') is-invalid @enderror"
                         placeholder="Digite o nome do funcionário...">
                     @error('name')
@@ -27,7 +27,7 @@
                 </div>
                 <div class="col-6">
                     <label for="email" class="form-label text-gray-label mt-4">E-mail*</label>
-                    <input type="email" name="email" id="email" required
+                    <input type="email" name="email" id="email" value="{{ old('email') }}" required
                         class="form-control p-3 @error('email') is-invalid @enderror"
                         placeholder="Digite o email do funcionário...">
                     @error('email')
@@ -41,7 +41,7 @@
             <div class="row">
                 <div class="col-6">
                     <label for="phone" class="form-label text-gray-label mt-4">Telefone*</label>
-                    <input type="phone" name="phone" id="phone" required class="form-control p-3"
+                    <input type="phone" name="phone" id="phone"  value="{{ old('phone') }}" required class="form-control p-3"
                         placeholder="Digite o phone do funcionário...">
                 </div>
                 <div class="col-6">
