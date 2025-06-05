@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Services\EmployeesService;
 use App\Models\User;
 use App\Models\Role;
+use Devrabiul\ToastMagic\Facades\ToastMagic;
 class EmployeesController extends Controller
 {
     protected $service;
@@ -43,8 +44,9 @@ class EmployeesController extends Controller
         $validated['user_id'] = $user->id; 
     
         $this->service->store($validated);
-    
-        return redirect()->route('employees.index')->with('success', 'Funcionário criado com sucesso!');
+
+        ToastMagic::success('Funcionário cadastrado com sucesso!');
+        return redirect()->route('employees.index');
     }
     public function edit($id)
     {
@@ -81,8 +83,8 @@ class EmployeesController extends Controller
             'name' => $validated['name'],
             'phone' => $validated['phone'],
         ]);
-
-        return redirect()->route('employees.index')->with('success', 'Funcionário atualizado com sucesso!');
+        ToastMagic::success('Funcionário atualizado com sucesso!');
+        return redirect()->route('employees.index');
     }
 
     public function destroy($id)
@@ -95,8 +97,8 @@ class EmployeesController extends Controller
         }
     
         $this->service->delete($id);
-    
-        return redirect()->route('employees.index')->with('success', 'Funcionário excluído com sucesso!');
+        ToastMagic::success('Funcionário excluído com sucesso!');
+        return redirect()->route('employees.index');
     }    
     
 }
