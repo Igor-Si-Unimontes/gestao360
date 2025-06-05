@@ -19,6 +19,11 @@ class EmployeesController extends Controller
         $employees = $this->service->getAll();
         return view('employees.index', compact('employees'));
     }
+    public function show($id)
+    {
+        $employees = $this->service->find($id);
+        return view('employees.index', compact('employees'));
+    }
     public function create()
     {
         $roles = Role::all();
@@ -79,5 +84,19 @@ class EmployeesController extends Controller
 
         return redirect()->route('employees.index')->with('success', 'Funcionário atualizado com sucesso!');
     }
+
+    public function destroy($id)
+    {
+        $employee = $this->service->find($id);
+        $employee->load('user'); 
+    
+        if ($employee->user) {
+            $employee->user->delete();
+        }
+    
+        $this->service->delete($id);
+    
+        return redirect()->route('employees.index')->with('success', 'Funcionário excluído com sucesso!');
+    }    
     
 }

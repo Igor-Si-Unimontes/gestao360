@@ -118,6 +118,22 @@ body {
     background-color: var(--bs-purple);
     color: var(--bs-white);
 }
+.btn-cancelar-vermelho {
+    background-color: var(--bs-red);
+    color: var(--bs-white);
+    font-weight: 500;
+    border-color: var(--bs-white);
+    border-radius: 8px;
+    padding: 8px;
+}
+.btn-cancelar-vermelho:hover {
+    background-color: var(--bs-red);
+    color: var(--bs-white);
+    font-weight: 500;
+    border-color: var(--bs-red);
+    border-radius: 8px;
+    padding: 8px;
+}
 .btn-cancelar {
     background-color: var(--bs-white);
     color: var(--bs-red);

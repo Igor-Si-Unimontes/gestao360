@@ -40,29 +40,58 @@
                         <td>{{ $employee->email }}</td>
                         <td>{{ $employee->phone }}</td>
                         <td>
-                            <a href="#" class="btn btn-sm" style="color: #7212E7;" title="Visualizar">
-                              <svg xmlns="http://www.w3.org/2000/svg" class="lucide" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7212E7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="3"></circle>
-                                <path d="M2 12s4-8 10-8 10 8 10 8-4 8-10 8-10-8-10-8z"></path>
-                              </svg>
+                            <a href="#" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#showEmployeeModal-{{ $employee->id }}" style="color: #7212E7;" title="Visualizar">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="lucide" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7212E7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                    <path d="M2 12s4-8 10-8 10 8 10 8-4 8-10 8-10-8-10-8z"></path>
+                                </svg>
                             </a>
                             <a href="{{ route('employees.edit', $employee->id) }}" class="btn btn-sm" style="color: #7212E7;" title="Editar">
-                              <svg xmlns="http://www.w3.org/2000/svg" class="lucide" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7212E7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M12 20h9"></path>
-                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>
-                              </svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="lucide" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7212E7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 20h9"></path>
+                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>
+                                </svg>
                             </a>
-                            <a href="#" class="btn btn-sm" style="color: #7212E7;" title="Remover">
-                              <svg xmlns="http://www.w3.org/2000/svg" class="lucide" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7212E7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="3 6 5 6 21 6"></polyline>
-                                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
-                                <path d="M10 11v6"></path>
-                                <path d="M14 11v6"></path>
-                                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
-                              </svg>
-                            </a>
-                          </td>                                                                                                 
+                            <form action="{{ route('employees.destroy', $employee->id) }}" method="POST" style="display:inline;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm" style="color: #7212E7;" title="Remover" onclick="return confirm('Tem certeza que deseja excluir este funcionário?');">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="lucide" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7212E7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                                        <path d="M10 11v6"></path>
+                                        <path d="M14 11v6"></path>
+                                        <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+                                    </svg>
+                                </button>
+                            </form>
+                        </td>                                                                                           
                     </tr>
+                    <div class="modal fade" id="showEmployeeModal-{{ $employee->id }}" tabindex="-1" aria-labelledby="showEmployeeModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="showEmployeeModalLabel">Dados Do Funcionário:<b> {{ $employee->name }} </b> </h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                              <div>
+                                <label for="name" class="form-label text-gray-label mt-4">Nome</label>
+                                <input type="text" name="name" id="name" class="form-control p-3" value="{{ $employee->name }}" disabled>
+
+                                <label for="name" class="form-label text-gray-label mt-4">Telefone</label>
+                                <input type="text" name="name" id="name" class="form-control p-3" value="{{ $employee->phone }}" disabled>
+
+                                <label for="name" class="form-label text-gray-label mt-4">E-mail</label>
+                                <input type="text" name="name" id="name" class="form-control p-3" value="{{ $employee->email }}" disabled>
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" data-bs-dismiss="modal" class="btn btn-cancelar-vermelho" style="hover: none;">Cancelar</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                 @endforeach
             </tbody>
         </table>
