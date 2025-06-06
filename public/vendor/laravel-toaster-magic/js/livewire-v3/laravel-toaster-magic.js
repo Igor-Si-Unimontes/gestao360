@@ -6,6 +6,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Ensure the toast container exists
     if (!document.querySelector(".toast-container")) {
+
+        if (typeof toastMagicPosition === 'undefined') {
+            var toastMagicPosition = "toast-top-end";
+        }
+
         document.body.insertAdjacentHTML(
             "afterbegin",
             `<div><div class="toast-container ${toastMagicPosition}"></div></div>`
@@ -38,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // Close button event listener
-document.body.addEventListener("click", function (event) {
+document?.body?.addEventListener("click", function (event) {
     const closeButton = event.target.closest(".toast-close-btn");
     if (!closeButton) return;
 
@@ -70,7 +75,7 @@ class ToastMagic {
         if (!this.toastContainer) {
             this.toastContainer = document.createElement("div");
             this.toastContainer.classList.add("toast-container");
-            document.body.appendChild(this.toastContainer);
+            document?.body?.appendChild(this.toastContainer);
         }
 
         // Remove any existing position class before adding a new one
