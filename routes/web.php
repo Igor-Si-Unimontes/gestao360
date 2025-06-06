@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\UserController;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\DB;
@@ -39,6 +40,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/funcionarios/{id}/edit', [EmployeeController::class, 'edit'])->name('employees.edit');
     Route::patch('/funcionarios/{id}', [EmployeeController::class, 'update'])->name('employees.update');
     Route::delete('/funcionarios/{id}', [EmployeeController::class, 'destroy'])->name('employees.destroy');
+    //Categories
+    Route::resource('categories', CategoryController::class);
+    Route::patch('/categories/{id}/status', [CategoryController::class, 'updateStatus'])->name('categories.updateStatus');
 
     //outra rota
     Route::get('/profile', function () {

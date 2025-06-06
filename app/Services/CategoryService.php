@@ -1,49 +1,40 @@
 <?php
 
 namespace App\Services;
-use App\Repositories\EmployeeRepository;
+use App\Repositories\CategoryRepository;
 use Exception;
 
-class EmployeeService
+class CategoryService
 {
     protected $repository;
-    public function __construct(EmployeeRepository $repository)
+    public function __construct(CategoryRepository $repository)
     {
         $this->repository = $repository;
     }
-
     public function store(array $data)
     {
         return $this->repository->store($data);
     }
-
     public function update(int $id, array $data)
     {
-        $employees = $this->repository->find($id);
-        if(!$employees)
+        $category = $this->repository->find($id);
+        if(!$category)
         {
-            throw new Exception("Funcionário nâo encontrado !");
+            throw new Exception("Categoria nâo encontrada !");
         }
-        return $this->repository->update($id,$data);
+         return $this->repository->update($id,$data);
     }
-
     public function delete(int $id)
     {
         return $this->repository->delete($id);
     }
-
     public function find(int $id)
     {
-        $employees = $this->repository->find($id);
-        if(!$employees)
-        {
-            throw new Exception("Funcionário nâo encontrado !");
-        }
-        return $employees;
+        return $this->repository->find($id);
     }
-
     public function getAll()
     {
         return $this->repository->getAll();
     }
+
 }

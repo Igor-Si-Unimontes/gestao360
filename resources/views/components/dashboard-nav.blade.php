@@ -35,12 +35,12 @@
         </li>
 
         <li class="nav-item">
-            <a href="{{ route('profile') }}"
-               class="nav-link {{ request()->routeIs('profile') ? 'active bg-purple-sidebar text-purple-active' : 'bg-white text-gray-sidebar' }} rounded-0 px-4 py-3 w-100 d-flex align-items-center group"
-               style="{{ request()->routeIs('profile') ? 'border-left: 4px solid #7212E7; color: #7212E7;' : '' }}">
-                <i class="fas fa-profile me-3 group-hover:text-[#7212E7]" style="{{ request()->routeIs('profile') ? 'color: #7212E7;' : '' }}"></i> 
+            <a href="{{ route('categories.index') }}"
+               class="nav-link {{ request()->routeIs('categories.*') ? 'active bg-purple-sidebar text-purple-active' : 'bg-white text-gray-sidebar' }} rounded-0 px-4 py-3 w-100 d-flex align-items-center group"
+               style="{{ request()->routeIs('categories.*') ? 'border-left: 4px solid #7212E7; color: #7212E7;' : '' }}">
+                <i class="fas fa-profile me-3 group-hover:text-[#7212E7]" style="{{ request()->routeIs('categories.*') ? 'color: #7212E7;' : '' }}"></i> 
                 <span class="group-hover:text-[#7212E7]">
-                    Calendar
+                    Categorias
                 </span>
             </a>
         </li>

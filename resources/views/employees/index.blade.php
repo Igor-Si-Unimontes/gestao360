@@ -163,7 +163,7 @@
         $(document).ready(function() {
             $('#employeesTable').DataTable({
                 language: {
-                    url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json',
+                    url: 'https://cdn.datatables.net/plug-ins/2.0.0/i18n/pt-BR.json',
                     search: "",
                     searchPlaceholder: "Busque aqui...",
                     lengthMenu: "Linhas _MENU_"
