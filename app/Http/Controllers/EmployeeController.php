@@ -3,15 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\EmployeesService;
+use App\Services\EmployeeService;
 use App\Models\User;
 use App\Models\Role;
 use Devrabiul\ToastMagic\Facades\ToastMagic;
-class EmployeesController extends Controller
+class EmployeeController extends Controller
 {
     protected $service;
 
-    public function __construct(EmployeesService $service)
+    public function __construct(EmployeeService $service)
     {
         $this->service = $service;
     }

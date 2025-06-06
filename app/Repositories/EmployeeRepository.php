@@ -3,7 +3,7 @@
 namespace App\Repositories;
 use App\Models\Employee;
 
-class EmployeesRepository
+class EmployeeRepository
 {
     public function store(array $data)
     {

@@ -1,13 +1,13 @@
 <?php
 
 namespace App\Services;
-use App\Repositories\EmployeesRepository;
+use App\Repositories\EmployeeRepository;
 use Exception;
 
-class EmployeesService
+class EmployeeService
 {
     protected $repository;
-    public function __construct(EmployeesRepository $repository)
+    public function __construct(EmployeeRepository $repository)
     {
         $this->repository = $repository;
     }

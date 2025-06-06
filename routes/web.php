@@ -5,7 +5,7 @@ use App\Http\Controllers\UserController;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\EmployeesController;
+use App\Http\Controllers\EmployeeController;
 
 // Rotas para usuários não autenticados
 Route::middleware('guest')->group(function () {
@@ -33,12 +33,12 @@ Route::middleware('auth')->group(function () {
     })->name('dashboard');
 
     // Employees
-    Route::get('/funcionarios', [EmployeesController::class, 'index'])->name('employees.index');
-    Route::get('/funcionarios/create', [EmployeesController::class, 'create'])->name('employees.create');
-    Route::post('/funcionarios', [EmployeesController::class, 'store'])->name('employees.store');
-    Route::get('/funcionarios/{id}/edit', [EmployeesController::class, 'edit'])->name('employees.edit');
-    Route::patch('/funcionarios/{id}', [EmployeesController::class, 'update'])->name('employees.update');
-    Route::delete('/funcionarios/{id}', [EmployeesController::class, 'destroy'])->name('employees.destroy');
+    Route::get('/funcionarios', [EmployeeController::class, 'index'])->name('employees.index');
+    Route::get('/funcionarios/create', [EmployeeController::class, 'create'])->name('employees.create');
+    Route::post('/funcionarios', [EmployeeController::class, 'store'])->name('employees.store');
+    Route::get('/funcionarios/{id}/edit', [EmployeeController::class, 'edit'])->name('employees.edit');
+    Route::patch('/funcionarios/{id}', [EmployeeController::class, 'update'])->name('employees.update');
+    Route::delete('/funcionarios/{id}', [EmployeeController::class, 'destroy'])->name('employees.destroy');
 
     //outra rota
     Route::get('/profile', function () {
