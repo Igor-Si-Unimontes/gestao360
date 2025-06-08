@@ -44,6 +44,15 @@
                 </span>
             </a>
         </li>
-
+        <li class="nav-item">
+            <a href="{{ route('suppliers.index') }}"
+               class="nav-link {{ request()->routeIs('suppliers.*') ? 'active bg-purple-sidebar text-purple-active' : 'bg-white text-gray-sidebar' }} rounded-0 px-4 py-3 w-100 d-flex align-items-center group"
+               style="{{ request()->routeIs('suppliers.*') ? 'border-left: 4px solid #7212E7; color: #7212E7;' : '' }}">
+                <i class="fas fa-profile me-3 group-hover:text-[#7212E7]" style="{{ request()->routeIs('suppliers.*') ? 'color: #7212E7;' : '' }}"></i> 
+                <span class="group-hover:text-[#7212E7]">
+                    Fornecedores
+                </span>
+            </a>
+        </li>
     </ul>
 </nav>

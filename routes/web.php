@@ -7,6 +7,7 @@ use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\SupplierController;
 
 // Rotas para usuários não autenticados
 Route::middleware('guest')->group(function () {
@@ -43,7 +44,8 @@ Route::middleware('auth')->group(function () {
     //Categories
     Route::resource('categories', CategoryController::class);
     Route::patch('/categories/{id}/status', [CategoryController::class, 'updateStatus'])->name('categories.updateStatus');
-
+    //Suppliers
+    Route::resource('suppliers', SupplierController::class);
     //outra rota
     Route::get('/profile', function () {
         return view('auth.profile');
