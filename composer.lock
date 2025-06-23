@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ac4e6e0383690ad96bc8151505f42459",
+    "content-hash": "2659a54103060ce7dc99e140acae6e52",
     "packages": [
         {
             "name": "brick/math",
@@ -137,16 +137,16 @@
         },
         {
             "name": "devrabiul/laravel-toaster-magic",
-            "version": "v1.0.4",
+            "version": "v1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/devrabiul/laravel-toaster-magic.git",
-                "reference": "7ed4e8ca410c7e27356a7fab21b17780c53b3571"
+                "reference": "e7a213be15855152853788631757ffcc130925d8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/devrabiul/laravel-toaster-magic/zipball/7ed4e8ca410c7e27356a7fab21b17780c53b3571",
-                "reference": "7ed4e8ca410c7e27356a7fab21b17780c53b3571",
+                "url": "https://api.github.com/repos/devrabiul/laravel-toaster-magic/zipball/e7a213be15855152853788631757ffcc130925d8",
+                "reference": "e7a213be15855152853788631757ffcc130925d8",
                 "shasum": ""
             },
             "type": "library",
@@ -182,6 +182,8 @@
                 "flash-notifications",
                 "laravel",
                 "laravel-toastr",
+                "livewire",
+                "livewire-toaster",
                 "magic",
                 "notifications",
                 "php",
@@ -190,9 +192,9 @@
             ],
             "support": {
                 "issues": "https://github.com/devrabiul/laravel-toaster-magic/issues",
-                "source": "https://github.com/devrabiul/laravel-toaster-magic/tree/v1.0.4"
+                "source": "https://github.com/devrabiul/laravel-toaster-magic/tree/v1.1"
             },
-            "time": "2025-05-26T18:13:47+00:00"
+            "time": "2025-06-23T03:22:26+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
@@ -8124,12 +8126,12 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.2"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }

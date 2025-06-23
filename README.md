@@ -5,28 +5,16 @@ inventory, and administrative processes in small businesses.
 ## Features
 <ul>
   <li>
-    User Registration
+    PHP >= 8.4
   </li>
   <li>
-    Email Verification on Registration
+    Composer
   </li>
   <li>
-    Password Recovery via Email
+    Node and Npm
   </li>
   <li>
-    Password Change
-  </li>
-  <li>
-    Soft Deletes and Hard Deletes for Account
-  </li>
-  <li>
-    Middleware for Authorization
-  </li>
-  <li>
-    Custom Error Handling
-  </li>
-  <li>
-    Unique Email Enforcement
+    Docker
   </li>
 </ul>
 
@@ -35,9 +23,12 @@ inventory, and administrative processes in small businesses.
 ### 1. Install Dependencies  
 Run the following command in the project root to install PHP and JavaScript dependencies:  
 ```bash
-composer install && npm install
+composer install
 ```
 
+```bash
+npm install
+```
 
 ### 2. Configure Environment
 Create a .env file based on the contents of .env.example: 
@@ -51,16 +42,26 @@ php artisan key:generate
 ```
 
 ### 3. Start the Database
-The project uses PostgreSQL as the database, managed via Docker for convenience. To start the database, run:
+The project uses Mysql as the database, managed via Docker for convenience. To start the database, run:
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
+
+```bash
+DB_CONNECTION=mysql
+DB_HOST=mysql_db
+DB_PORT=3306
+DB_DATABASE=gestao360
+DB_USERNAME=user
+DB_PASSWORD=secret
+```
+
 ⚠️ Feel free to use a different database if preferred, but ensure your .env file is configured accordingly.
 
 ### 4. Run Migrations 
 Apply the database migrations:
 ```bash
-php artisan migrate
+docker exec -it laravel_app php artisan migrate
 ```
 
 If the database does not exist, only select 'yes' to create it.
@@ -68,13 +69,23 @@ If the database does not exist, only select 'yes' to create it.
 ### 5. Run Seeders
 Apply the seeders:
 ```bash
-php artisan db:seed --class=RoleSeeder
+docker exec -it laravel_app php artisan db:seed --class=RoleSeeder
+```
+AND
+```bash
+docker exec -it laravel_app php artisan db:seed --class=UserSeeder
 ```
 
 ### 5. Start Apllication
 To run the website, we need to enable docker for the services to work.
 ```bash
 docker compose up -d
+```
+### 6. Credentials
+To log into the system, we need credentials.
+```bash
+Email: admin@gmail.com
+Password: admin123@ 
 ```
 
 ## How to View Emails?
@@ -93,14 +104,3 @@ If you prefer English messages, simply remove the second array from the validate
 
 ## 🚀 Coming Soon
 
-### Future Features
-
-- [ ] *Account Reactivation* – Ability for users to reactivate their accounts after a soft delete.
-- [ ] *Login Rate Limiting* – Implement rate limiting for login attempts to enhance security.
-- [ ] *Social Login Providers Integration* – Ability for users to log in using third-party services like Google, Facebook, etc., via OAuth authentication.
-
-These features will be added in upcoming versions to improve the functionality and security of the application.
-
-##
-
-[![Buy Me a Coffee](https://www.buymeacoffee.com/assets/img/custom_images/yellow_img.png)](https://buymeacoffee.com/aadev)

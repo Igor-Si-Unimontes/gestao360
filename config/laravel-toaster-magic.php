@@ -7,7 +7,8 @@ return [
         "preventDuplicates" => false,
         "showDuration" => "300",
         "timeOut" => "5000",
+        "theme" => "default", // "default, material"
     ],
-    'livewire_enabled' => true,
+    'livewire_enabled' => false,
     'livewire_version' => 'v3'
 ];
