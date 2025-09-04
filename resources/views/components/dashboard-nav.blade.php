@@ -24,12 +24,12 @@
         </li>
 
         <li class="nav-item">
-            <a href="#"
-               class="nav-link {{ request()->routeIs('projects') ? 'active bg-purple-sidebar text-purple-active' : 'bg-white text-gray-sidebar' }} rounded-0 px-4 py-3 w-100 d-flex align-items-center group"
-               style="{{ request()->routeIs('projects') ? 'border-left: 4px solid #7212E7; color: #7212E7;' : '' }}">
-                <i class="fas fa-folder me-3 group-hover:text-[#7212E7]" style="{{ request()->routeIs('projects') ? 'color: #7212E7;' : '' }}"></i> 
+            <a href="{{ route('produtos.index') }}"
+               class="nav-link {{ request()->routeIs('produtos.*') ? 'active bg-purple-sidebar text-purple-active' : 'bg-white text-gray-sidebar' }} rounded-0 px-4 py-3 w-100 d-flex align-items-center group"
+               style="{{ request()->routeIs('produtos.*') ? 'border-left: 4px solid #7212E7; color: #7212E7;' : '' }}">
+                <i class="fas fa-folder me-3 group-hover:text-[#7212E7]" style="{{ request()->routeIs('produtos.*') ? 'color: #7212E7;' : '' }}"></i> 
                 <span class="group-hover:text-[#7212E7]">
-                    Pedidos
+                    Produtos
                 </span>
             </a>
         </li>

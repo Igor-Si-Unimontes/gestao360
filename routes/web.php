@@ -1,12 +1,14 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BatchController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\UserController;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SupplierController;
 
 // Rotas para usuários não autenticados
@@ -46,6 +48,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/categories/{id}/status', [CategoryController::class, 'updateStatus'])->name('categories.updateStatus');
     //Suppliers
     Route::resource('suppliers', SupplierController::class);
+    //Products
+    Route::resource('produtos', ProductController::class);
+    //Batches
+    Route::get('/lotes/create/{product}', [BatchController::class, 'create'])->name('lotes.create');
+    Route::post('/lotes/{product}', [BatchController::class, 'store'])->name('lotes.store');
+    Route::resource('lotes', BatchController::class)->except(['create', 'store']);
     //outra rota
     Route::get('/profile', function () {
         return view('auth.profile');
