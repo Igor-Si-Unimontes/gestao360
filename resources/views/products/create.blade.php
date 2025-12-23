@@ -12,40 +12,44 @@
             <div class="row">
                 <div class="col-4 mb-3">
                     <label for="name" class="form-label">Nome</label>
-                    <input type="text" class="form-control" id="name" name="name" required>
+                    <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}" required>
                 </div>
                 <div class="col-4 mb-3">
                     <label for="code" class="form-label">Código do Produto</label>
-                    <input type="text" class="form-control" id="code" name="code" required>
+                    <input type="text" class="form-control" id="code" name="code" value="{{ old('code') }}" required>
                 </div>
                 <div class="col-4 mb-3">
                     <label for="category_id" class="form-label">Categoria</label>
                     <select class="form-select" id="category_id" name="category_id" required>
-                        <option value="" disabled selected>Selecione uma categoria</option>
+                        <option value="" disabled {{ old('category_id') ? '' : 'selected' }}>Selecione uma categoria</option>
                         @foreach ($categories as $category)
-                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                            <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                                {{ $category->name }}
+                            </option>
                         @endforeach
                     </select>
                 </div>
                 <div class="col-4 mb-3">
                     <label for="supplier_id" class="form-label">Fornecedor</label>
                     <select class="form-select" id="supplier_id" name="supplier_id" required>
-                        <option value="" disabled selected>Selecione um fornecedor</option>
+                        <option value="" disabled {{ old('supplier_id') ? '' : 'selected' }}>Selecione um fornecedor</option>
                         @foreach ($suppliers as $supplier)
-                            <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                            <option value="{{ $supplier->id }}" {{ old('supplier_id') == $supplier->id ? 'selected' : '' }}>
+                                {{ $supplier->name }}
+                            </option>
                         @endforeach
                     </select>
                 </div>
-                <div class="col-4 mb-3">
+               <div class="col-4 mb-3">
                     <label for="returnable_product" class="form-label">Produto Retornável</label>
                     <select class="form-select" id="returnable_product" name="returnable_product" required>
-                        <option value="0">Não</option>
-                        <option value="1">Sim</option>
+                        <option value="0" @selected(old('returnable_product') == '0')>Não</option>
+                        <option value="1" @selected(old('returnable_product') == '1')>Sim</option>
                     </select>
                 </div>
                 <div class="col-4 mb-3">
                     <label for="description" class="form-label">Descrição</label>
-                    <input type="text" class="form-control" id="description" name="description">
+                    <input type="text" class="form-control" id="description" name="description" value="{{ old('description') }}">
                 </div>
             </div>
             <div class="row" style="margin-top: 30px;">

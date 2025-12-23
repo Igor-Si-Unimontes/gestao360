@@ -11,6 +11,7 @@
         <table id="productsTable" class="table table-hover">
             <thead>
                 <tr>
+                    <th>Código</th>
                     <th>Produto</th>
                     <th>Valor</th>
                     <th>Em Estoque</th>
@@ -22,9 +23,10 @@
             <tbody>
                 @foreach ($products as $product)
                     <tr>
+                        <td class="text-center">{{ $product->code }}</td>
                         <td>{{ $product->name }}</td>
                         <td>{{ $product->last_sale_price ?? 'Adicione lotes' }}</td>
-                        <td>{{ $product->total_quantity }}</td>
+                        <td class="text-center">{{ $product->total_quantity }}</td>
                         <td>{{ $product->category->name }}</td>
                         <td>
                             @if ($product->total_quantity <= 0)

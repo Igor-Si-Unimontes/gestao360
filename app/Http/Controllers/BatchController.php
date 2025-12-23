@@ -24,6 +24,7 @@ class BatchController extends Controller
     {
         $data = $request->validated();
         $data['product_id'] = $product->id;
+        $data['created_by'] = auth()->user()->first_name;
         Batch::create($data);
 
         return redirect()->route('produtos.index')->with('success', 'Lote criado com sucesso.');
@@ -41,7 +42,9 @@ class BatchController extends Controller
 
     public function update(BatchRequest $request, Batch $batch)
     {
-        $batch->update($request->validated());
+        $data = $request->validated();
+        $data['updated_by'] = auth()->user()->first_name;
+        $batch->update($data);
 
         return redirect()->route('produtos.index')->with('success', 'Lote atualizado com sucesso.');
     }

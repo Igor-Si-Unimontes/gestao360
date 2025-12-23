@@ -58,6 +58,7 @@
                 @else
                     <div class="row">
                         @foreach ($produto->batches as $batch)
+                        <p>Criado por {{ $batch->created_by ?? 'Desconhecido' }} as {{ \Carbon\Carbon::parse($batch->created_at)->format('d/m/Y H:i') }}</p>
                             <div class="row lote mb-3">
                                 <div class="col-4 mb-3">
                                     <label class="form-label">Quantidade</label>

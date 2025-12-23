@@ -18,7 +18,7 @@ class ProductController extends Controller
 
     public function create()
     {
-        $categories = Category::all();
+        $categories = Category::where('status', 1)->get();
         $suppliers = Supplier::all();
         return view('products.create', compact('categories', 'suppliers'));
     }
@@ -36,9 +36,10 @@ class ProductController extends Controller
         return view('products.show', compact('produto'));
     }
 
-    public function edit(Product $product)
+    public function edit(Product $produto)
     {
-        return view('products.edit', compact('product'));
+        $produto->load('category', 'supplier', 'batches');
+        return view('products.edit', compact('produto'));
     }
 
     public function update(ProductRequest $request, Product $product)
