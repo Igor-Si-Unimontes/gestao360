@@ -38,22 +38,23 @@ class ProductController extends Controller
 
     public function edit(Product $produto)
     {
+        $categories = Category::where('status', 1)->get();
+        $suppliers = Supplier::all();
         $produto->load('category', 'supplier', 'batches');
-        return view('products.edit', compact('produto'));
+        return view('products.edit', compact('produto', 'categories', 'suppliers'));
     }
 
-    public function update(ProductRequest $request, Product $product)
+    public function update(ProductRequest $request, Product $produto)
     {
+        $produto->update($request->validated());
 
-        $product->update($request->validated());
-
-        return redirect()->route('products.index')->with('success', 'Produto atualizado com sucesso.');
+        return redirect()->route('produtos.index')->with('success', 'Produto atualizado com sucesso.');
     }
 
-    public function destroy(Product $product)
+    public function destroy(Product $produto)
     {
-        $product->delete();
+        $produto->delete();
 
-        return redirect()->route('products.index')->with('success', 'Produto deletado com sucesso.');
+        return redirect()->route('produtos.index')->with('success', 'Produto deletado com sucesso.');
     }
 }
