@@ -55,6 +55,13 @@ class BatchController extends Controller
         $batch->active = false;
         $batch->save();
 
-        return redirect()->route('produtos.index')->with('success', 'Status do lote atualizado com sucesso.');
+        return redirect()->route('produtos.index')->with('success', 'Lote inativado com sucesso.');
+    }
+    public function ativandoLote(Batch $batch)
+    {
+        $batch->active = true;
+        $batch->save();
+
+        return redirect()->route('produtos.index')->with('success', 'Lote reativado com sucesso.');
     }
 }

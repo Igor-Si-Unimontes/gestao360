@@ -56,7 +56,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('lotes', BatchController::class)
     ->parameters(['lotes' => 'batch'])
     ->except(['create', 'store']);
-    Route::patch('/lotes/{batch}/status', [BatchController::class, 'inativandoLote'])->name('lotes.updateStatus');
+    Route::patch('/lotes/{batch}/inativar', [BatchController::class, 'inativandoLote'])->name('lotes.inativarLote');
+    Route::patch('/lotes/{batch}/ativar', [BatchController::class, 'ativandoLote'])->name('lotes.ativarLote');
     //outra rota
     Route::get('/profile', function () {
         return view('auth.profile');

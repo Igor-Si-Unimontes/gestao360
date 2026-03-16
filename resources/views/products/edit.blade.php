@@ -95,169 +95,225 @@
 
         <div class="tab-pane fade" id="lotes">
 
+            <div class="d-flex justify-content-end mb-3">
+                <button id="toggleInactiveBatches" class="btn btn-outline-secondary btn-sm">
+                    Ver lotes inativos
+                </button>
+            </div>
+
             @forelse ($produto->batches as $batch)
-                <form action="{{ route('lotes.update', $batch->id) }}" method="POST"
-                    class="border rounded p-3 mb-4 lote position-relative">
-                    @csrf
-                    @method('PUT')
+                <div class="batch-card {{ !$batch->active ? 'batch-inactive d-none' : '' }}">
+                    <form action="{{ route('lotes.update', $batch->id) }}" method="POST"
+                        class="border rounded p-3 mb-4 lote position-relative">
+                        @csrf
+                        @method('PUT')
 
-                    <button type="button" data-bs-toggle="modal" data-bs-target="#deleteBatchModal-{{ $batch->id }}"
-                        style="position:absolute; top:10px; right:10px; background:none; border:none; cursor:pointer;">
+                        <button type="button" data-bs-toggle="modal"
+                            data-bs-target="{{ $batch->active ? '#inativarBatchModal-' . $batch->id : '#ativarBatchModal-' . $batch->id }}"
+                            style="position:absolute; top:10px; right:10px; background:none; border:none; cursor:pointer;">
 
-                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
-                            fill="none" stroke="#dc3545" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="3 6 5 6 21 6"></polyline>
-                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
-                            <path d="M10 11v6"></path>
-                            <path d="M14 11v6"></path>
-                            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
-                        </svg>
-                    </button>
+                            @if ($batch->active)
+                                <!-- Lixeira -->
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+                                    fill="none" stroke="#dc3545" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                                    <path d="M10 11v6"></path>
+                                    <path d="M14 11v6"></path>
+                                    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+                                </svg>
+                            @else
+                                <!-- Reativar -->
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+                                    fill="none" stroke="#28a745" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <polyline points="23 4 23 10 17 10"></polyline>
+                                    <polyline points="1 20 1 14 7 14"></polyline>
+                                    <path d="M3.51 9a9 9 0 0114.13-3.36L23 10"></path>
+                                    <path d="M20.49 15a9 9 0 01-14.13 3.36L1 14"></path>
+                                </svg>
+                            @endif
+                        </button>
 
-                    <div class="row">
+                        <div class="row">
 
-                        <div class="col-4 mb-3">
-                            <label class="form-label">Quantidade</label>
-                            <input type="number" name="quantity" class="form-control" value="{{ $batch->quantity }}">
-                        </div>
-
-                        <div class="col-4 mb-3">
-                            <label class="form-label">Preço de Custo</label>
-                            <input type="text" name="cost_price" class="form-control cost_price"
-                                value="{{ $batch->cost_price }}">
-                        </div>
-
-                        <div class="col-4 mb-3">
-                            <label class="form-label">Preço de Venda</label>
-                            <input type="text" name="sale_price" class="form-control sale_price"
-                                value="{{ $batch->sale_price }}">
-                        </div>
-
-                        <div class="col-4 mb-3">
-                            <label class="form-label">Validade</label>
-                            <input type="date" name="expiration_date" class="form-control"
-                                value="{{ $batch->expiration_date }}">
-                        </div>
-
-                        <div class="col-4 mb-3">
-                            <label class="form-label">Código do Lote</label>
-                            <input type="text" name="batch_code" class="form-control"
-                                value="{{ $batch->batch_code }}">
-                        </div>
-
-                        <div class="col-4 mb-3">
-                            <label class="form-label">Markup (%)</label>
-                            <input type="text" class="form-control markup_display" readonly>
-                        </div>
-
-                        <div class="row mt-4">
-                            <div class="col-3">
-                                <a href="{{ route('produtos.index') }}" class="btn btn-cancelar w-100"
-                                    style="font-size:18px;font-weight:500;">
-                                    Cancelar
-                                </a>
+                            <div class="col-4 mb-3">
+                                <label class="form-label">Quantidade</label>
+                                <input type="number" name="quantity" class="form-control"
+                                    value="{{ $batch->quantity }}" {{ !$batch->active ? 'disabled' : '' }}>
                             </div>
 
-                            <div class="col-3">
-                                <button type="submit" class="btn btn-purple w-100"
-                                    style="font-size:18px;font-weight:400;">
-                                    Salvar Lote
-                                </button>
-                            </div>
-                        </div>
-
-                    </div>
-                </form>
-
-                <form id="delete-batch-{{ $batch->id }}" action="{{ route('lotes.updateStatus', $batch->id) }}"
-                    method="POST" style="display:none;">
-                    @csrf
-                    @method('PATCH')
-                </form>
-                <div class="modal fade" id="deleteBatchModal-{{ $batch->id }}" tabindex="-1"
-                    aria-labelledby="deleteBatchModalLabel-{{ $batch->id }}" aria-hidden="true">
-
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="deleteBatchModalLabel-{{ $batch->id }}">
-                                    Inativar Lote
-                                </h5>
-
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar">
-                                </button>
+                            <div class="col-4 mb-3">
+                                <label class="form-label">Preço de Custo</label>
+                                <input type="text" name="cost_price" class="form-control cost_price"
+                                    value="{{ $batch->cost_price }}" {{ !$batch->active ? 'disabled' : '' }}>
                             </div>
 
-                            <div class="modal-body">
-                                Tem certeza que deseja inativar o lote
-                                <strong>{{ $batch->batch_code }}</strong>?
-                                <br><br>
-                                Esta ação poderá ser revertida depois.
+                            <div class="col-4 mb-3">
+                                <label class="form-label">Preço de Venda</label>
+                                <input type="text" name="sale_price" class="form-control sale_price"
+                                    value="{{ $batch->sale_price }}" {{ !$batch->active ? 'disabled' : '' }}>
                             </div>
 
-                            <div class="modal-footer">
-
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                    Cancelar
-                                </button>
-
-                                <form action="{{ route('lotes.updateStatus', $batch->id) }}" method="POST">
-                                    @csrf
-                                    @method('PATCH')
-
-                                    <button type="submit" class="btn btn-cancelar-vermelho">
-                                        Sim, inativar
-                                    </button>
-                                </form>
-
+                            <div class="col-4 mb-3">
+                                <label class="form-label">Validade</label>
+                                <input type="date" name="expiration_date" class="form-control"
+                                    value="{{ $batch->expiration_date }}" {{ !$batch->active ? 'disabled' : '' }}>
                             </div>
+
+                            <div class="col-4 mb-3">
+                                <label class="form-label">Código do Lote</label>
+                                <input type="text" name="batch_code" class="form-control"
+                                    value="{{ $batch->batch_code }}" {{ !$batch->active ? 'disabled' : '' }}>
+                            </div>
+
+                            <div class="col-4 mb-3">
+                                <label class="form-label">Markup (%)</label>
+                                <input type="text" class="form-control markup_display" readonly>
+                            </div>
+
+                            @if ($batch->active)
+                                <div class="row mt-4">
+
+                                    <div class="col-3">
+                                        <a href="{{ route('produtos.index') }}" class="btn btn-cancelar w-100"
+                                            style="font-size:18px;font-weight:500;">
+                                            Cancelar
+                                        </a>
+                                    </div>
+
+                                    <div class="col-3">
+                                        <button type="submit" class="btn btn-purple w-100"
+                                            style="font-size:18px;font-weight:400;">
+                                            Salvar Lote
+                                        </button>
+                                    </div>
+
+                                </div>
+                            @endif
 
                         </div>
-                    </div>
-
+                    </form>
                 </div>
+                {{-- MODAIS SÃO RENDERIZADOS FORA DO batch-card --}}
+                @if ($batch->active)
+                    {{-- MODAL INATIVAR --}}
+                    <div class="modal fade" id="inativarBatchModal-{{ $batch->id }}" tabindex="-1"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Inativar Lote</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Tem certeza que deseja inativar o lote <strong>{{ $batch->batch_code }}</strong>?
+                                    <br><br>
+                                    Esta ação poderá ser revertida depois.
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Cancelar</button>
+                                    <form action="{{ route('lotes.inativarLote', $batch->id) }}" method="POST">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button type="submit" class="btn btn-cancelar-vermelho">Sim, inativar</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @else
+                    {{-- MODAL REATIVAR --}}
+                    <div class="modal fade" id="ativarBatchModal-{{ $batch->id }}" tabindex="-1"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Reativar Lote</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Deseja reativar o lote <strong>{{ $batch->batch_code }}</strong> novamente?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Cancelar</button>
+                                    <form action="{{ route('lotes.ativarLote', $batch->id) }}" method="POST">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button type="submit" class="btn btn-success">Reativar lote</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
             @empty
                 <p class="text-muted mt-3">Nenhum lote cadastrado.</p>
             @endforelse
 
         </div>
-    </div>
-    </div>
-@endsection
 
-@section('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.lote').forEach(lote => {
-                const cost = parseFloat(lote.querySelector('.cost_price').value) || 0;
-                const sale = parseFloat(lote.querySelector('.sale_price').value) || 0;
-                const markupField = lote.querySelector('.markup_display');
 
-                if (cost > 0 && sale > 0) {
-                    markupField.value = (((sale - cost) / cost) * 100).toFixed(2) + ' %';
-                } else {
-                    markupField.value = '0 %';
-                }
+    @endsection
+
+    @section('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                document.querySelectorAll('.lote').forEach(lote => {
+                    const cost = parseFloat(lote.querySelector('.cost_price').value) || 0;
+                    const sale = parseFloat(lote.querySelector('.sale_price').value) || 0;
+                    const markupField = lote.querySelector('.markup_display');
+
+                    if (cost > 0 && sale > 0) {
+                        markupField.value = (((sale - cost) / cost) * 100).toFixed(2) + ' %';
+                    } else {
+                        markupField.value = '0 %';
+                    }
+                });
             });
-        });
-    </script>
-@endsection
+        </script>
+        <script>
+            document.getElementById('toggleInactiveBatches').addEventListener('click', function() {
 
-@section('styles')
-    <style>
-        #produtoTabs .nav-link.active {
-            background-color: #7212e7;
-            color: #fff;
-            border-radius: 8px 8px 0 0;
-        }
+                const inativos = document.querySelectorAll('.batch-inactive');
 
-        #produtoTabs .nav-link {
-            background-color: #7212e71a;
-            color: #7212e7;
-            margin-left: 10px;
-            border-radius: 8px 8px 0 0;
-            border: none;
-        }
-    </style>
-@endsection
+                inativos.forEach(el => {
+                    el.classList.toggle('d-none');
+                });
+
+                if (this.innerText === 'Ver lotes inativos') {
+                    this.innerText = 'Ocultar lotes inativos';
+                } else {
+                    this.innerText = 'Ver lotes inativos';
+                }
+
+            });
+        </script>
+
+    @endsection
+
+    @section('styles')
+        <style>
+            #produtoTabs .nav-link.active {
+                background-color: #7212e7;
+                color: #fff;
+                border-radius: 8px 8px 0 0;
+            }
+
+            #produtoTabs .nav-link {
+                background-color: #7212e71a;
+                color: #7212e7;
+                margin-left: 10px;
+                border-radius: 8px 8px 0 0;
+                border: none;
+            }
+
+            .batch-inactive {
+                opacity: 0.55;
+                border: 1px dashed #ccc;
+            }
+        </style>
+    @endsection
