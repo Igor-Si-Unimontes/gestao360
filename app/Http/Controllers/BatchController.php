@@ -6,6 +6,7 @@ use App\Http\Requests\BatchRequest;
 use App\Models\Batch;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use SebastianBergmann\Type\FalseType;
 
 class BatchController extends Controller
 {
@@ -49,10 +50,11 @@ class BatchController extends Controller
         return redirect()->route('produtos.index')->with('success', 'Lote atualizado com sucesso.');
     }
 
-    public function destroy(Batch $batch)
+    public function inativandoLote(Batch $batch)
     {
-        $batch->delete();
+        $batch->active = false;
+        $batch->save();
 
-        return redirect()->route('batches.index')->with('success', 'Lote deletado com sucesso.');
+        return redirect()->route('produtos.index')->with('success', 'Status do lote atualizado com sucesso.');
     }
 }

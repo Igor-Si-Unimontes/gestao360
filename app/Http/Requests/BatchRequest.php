@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class BatchRequest extends FormRequest
 {
@@ -21,13 +22,20 @@ class BatchRequest extends FormRequest
      */
     public function rules(): array
     {
+        $batchId = $this->route('batch')?->id;
+        
         return [
             'product_id' => 'exists:products,id',
             'quantity' => 'required|integer|min:1',
             'cost_price' => 'required|numeric|min:0',
             'sale_price' => 'required|numeric|min:0',
             'expiration_date' => 'required|date|after:today',
-            'batch_code' => 'required|string|max:255|unique:batches,batch_code',
+            'batch_code' => [
+            'required',
+            'string',
+            'max:255',
+            Rule::unique('batches', 'batch_code')->ignore($batchId),
+        ],
         ];
     }
 
