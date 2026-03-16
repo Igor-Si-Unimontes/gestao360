@@ -96,11 +96,26 @@
         <div class="tab-pane fade" id="lotes">
 
             @forelse ($produto->batches as $batch)
-                <form action="{{ route('lotes.update', $batch->id) }}" method="POST" class="border rounded p-3 mb-4 lote">
+                <form action="{{ route('lotes.update', $batch->id) }}" method="POST"
+                    class="border rounded p-3 mb-4 lote position-relative">
                     @csrf
                     @method('PUT')
 
+                    <button type="button" data-bs-toggle="modal" data-bs-target="#deleteBatchModal-{{ $batch->id }}"
+                        style="position:absolute; top:10px; right:10px; background:none; border:none; cursor:pointer;">
+
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+                            fill="none" stroke="#dc3545" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                            <path d="M10 11v6"></path>
+                            <path d="M14 11v6"></path>
+                            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+                        </svg>
+                    </button>
+
                     <div class="row">
+
                         <div class="col-4 mb-3">
                             <label class="form-label">Quantidade</label>
                             <input type="number" name="quantity" class="form-control" value="{{ $batch->quantity }}">
@@ -135,18 +150,73 @@
                             <input type="text" class="form-control markup_display" readonly>
                         </div>
 
-                        <div class="row" style="margin-top: 30px;">
+                        <div class="row mt-4">
                             <div class="col-3">
                                 <a href="{{ route('produtos.index') }}" class="btn btn-cancelar w-100"
-                                    style="font-size: 18px; font-weight: 500;">Cancelar</a>
+                                    style="font-size:18px;font-weight:500;">
+                                    Cancelar
+                                </a>
                             </div>
+
                             <div class="col-3">
                                 <button type="submit" class="btn btn-purple w-100"
-                                    style="font-size: 18px; font-weight: 400;">Salvar Lote</button>
+                                    style="font-size:18px;font-weight:400;">
+                                    Salvar Lote
+                                </button>
                             </div>
                         </div>
+
                     </div>
                 </form>
+
+                <form id="delete-batch-{{ $batch->id }}" action="{{ route('lotes.updateStatus', $batch->id) }}"
+                    method="POST" style="display:none;">
+                    @csrf
+                    @method('PATCH')
+                </form>
+                <div class="modal fade" id="deleteBatchModal-{{ $batch->id }}" tabindex="-1"
+                    aria-labelledby="deleteBatchModalLabel-{{ $batch->id }}" aria-hidden="true">
+
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteBatchModalLabel-{{ $batch->id }}">
+                                    Inativar Lote
+                                </h5>
+
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar">
+                                </button>
+                            </div>
+
+                            <div class="modal-body">
+                                Tem certeza que deseja inativar o lote
+                                <strong>{{ $batch->batch_code }}</strong>?
+                                <br><br>
+                                Esta ação poderá ser revertida depois.
+                            </div>
+
+                            <div class="modal-footer">
+
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    Cancelar
+                                </button>
+
+                                <form action="{{ route('lotes.updateStatus', $batch->id) }}" method="POST">
+                                    @csrf
+                                    @method('PATCH')
+
+                                    <button type="submit" class="btn btn-cancelar-vermelho">
+                                        Sim, inativar
+                                    </button>
+                                </form>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
             @empty
                 <p class="text-muted mt-3">Nenhum lote cadastrado.</p>
             @endforelse
