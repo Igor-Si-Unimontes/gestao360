@@ -32,7 +32,7 @@ class Product extends Model
 
     public function getTotalQuantityAttribute() //  * Estoque total (somando todos os lotes).
     {
-        return $this->batches()->sum('quantity');
+        return $this->batches()->where('active', true)->sum('quantity');
     }
     public function getLastSalePriceAttribute()
     {
