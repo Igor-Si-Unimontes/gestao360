@@ -51,10 +51,21 @@ class ProductController extends Controller
         return redirect()->route('produtos.index')->with('success', 'Produto atualizado com sucesso.');
     }
 
-    public function destroy(Product $produto)
+   public function destroy(Product $produto)
     {
+        $temLotesAtivos = $produto->batches()
+            ->where('active', true)
+            ->where('quantity', '>', 0)
+            ->exists();
+
+        if ($temLotesAtivos) {
+            return redirect()->route('produtos.index')
+                ->with('error', 'Não é possível deletar um produto com lotes ativos que possuem estoque.');
+        }
+
         $produto->delete();
 
-        return redirect()->route('produtos.index')->with('success', 'Produto deletado com sucesso.');
+        return redirect()->route('produtos.index')
+            ->with('success', 'Produto deletado com sucesso.');
     }
 }
