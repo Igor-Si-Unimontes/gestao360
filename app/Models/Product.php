@@ -38,5 +38,9 @@ class Product extends Model
     {
         return $this->batches()->latest()->first()?->sale_price;
     }
+    public function fiscal()
+    {
+        return $this->hasOne(Fiscal::class);
+    }
 
 }

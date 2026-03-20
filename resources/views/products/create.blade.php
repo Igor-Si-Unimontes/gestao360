@@ -9,6 +9,7 @@
     <div class="container bg-white rounded" style="padding: 30px;">
         <form action="{{ route('produtos.store') }}" method="POST">
             @csrf
+            <h5 style="margin-bottom: 20px;">Dados do Produto</h5>
             <div class="row">
                 <div class="col-4 mb-3">
                     <label for="name" class="form-label">Nome</label>
@@ -52,6 +53,56 @@
                     <input type="text" class="form-control" id="description" name="description" value="{{ old('description') }}">
                 </div>
             </div>
+            <hr style="margin: 30px 0;">
+
+            <h5 style="margin-bottom: 20px;">Dados Fiscais</h5>
+
+            <div class="row">
+                <div class="col-4 mb-3">
+                    <label class="form-label">Código do Produto (cProd)</label>
+                    <input type="text" name="cProd" class="form-control" value="{{ old('cProd') }}">
+                </div>
+
+                <div class="col-4 mb-3">
+                    <label class="form-label">Código de Barras (cEAN)</label>
+                    <input type="text" name="cEAN" class="form-control" value="{{ old('cEAN') }}">
+                </div>
+
+                <div class="col-4 mb-3">
+                    <label class="form-label">Descrição do Produto (xProd)</label>
+                    <input type="text" name="xProd" class="form-control" value="{{ old('xProd') }}">
+                </div>
+
+                <div class="col-4 mb-3">
+                    <label class="form-label">Nomenclatura Comum do Mercosul (NCM)</label>
+                    <input type="text" name="NCM" class="form-control" value="{{ old('NCM') }}">
+                </div>
+
+                <div class="col-4 mb-3">
+                    <label class="form-label">Código Substituição Tributária (CEST)</label>
+                    <input type="text" name="CEST" class="form-control" value="{{ old('CEST') }}">
+                </div>
+
+                <div class="col-4 mb-3">
+                    <label class="form-label">Código Fiscal de Operações (CFOP)</label>
+                    <input type="text" name="CFOP" class="form-control" value="{{ old('CFOP') }}">
+                </div>
+
+                <div class="col-4 mb-3">
+                    <label class="form-label">Código de Barras Tributável (cEANTrib)</label>
+                    <input type="text" name="cEANTrib" class="form-control" value="{{ old('cEANTrib') }}">
+                </div>
+
+                <div class="col-4 mb-3">
+                    <label class="form-label">Código de situação (CST)</label>
+                    <input type="text" name="CST" class="form-control" value="{{ old('CST') }}">
+                </div>
+
+                <div class="col-4 mb-3">
+                    <label class="form-label">Alíquota suportada pelo Consumidor (pST)</label>
+                    <input type="number" step="0.01" name="pST" class="form-control" value="{{ old('pST') }}">
+                </div>
+            </div>
             <div class="row" style="margin-top: 30px;">
                 <div class="col-3">
                     <a href="{{ route('produtos.index') }}" class="btn btn-cancelar w-100"
@@ -64,4 +115,39 @@
             </div>
         </form>
     </div>
+@endsection
+@section('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const code = document.getElementById('code');
+        const description = document.getElementById('description');
+        const name = document.getElementById('name');
+
+        const cProd = document.querySelector('input[name="cProd"]');
+        const xProd = document.querySelector('input[name="xProd"]');
+
+        let isUpdating = false;
+
+        function sync(source, target) {
+            if (isUpdating) return;
+            isUpdating = true;
+
+            target.value = source.value;
+
+            isUpdating = false;
+        }
+
+        code.addEventListener('input', () => sync(code, cProd));
+        cProd.addEventListener('input', () => sync(cProd, code));
+
+        description.addEventListener('input', () => sync(description, xProd));
+        xProd.addEventListener('input', () => sync(xProd, description));
+
+        name.addEventListener('input', function () {
+            if (!description.value && !isUpdating) {
+                sync(name, xProd);
+            }
+        });
+    });
+</script>
 @endsection

@@ -13,6 +13,12 @@
                 </button>
             </li>
             <li class="nav-item" role="presentation">
+                <button class="nav-link" id="lotes-tab" data-bs-toggle="tab" data-bs-target="#fiscais" type="button"
+                    role="tab" aria-controls="lotes" aria-selected="false">
+                    Dados Fiscais
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
                 <button class="nav-link" id="lotes-tab" data-bs-toggle="tab" data-bs-target="#lotes" type="button"
                     role="tab" aria-controls="lotes" aria-selected="false">
                     Lotes
@@ -50,7 +56,52 @@
                     </div>
                 </div>
             </div>
-
+            <!-- Aba: Dados Fiscais -->
+            <div class="tab-pane fade" id="fiscais" role="tabpanel" aria-labelledby="fiscais-tab">
+                @if ($produto->fiscal)
+                    <div class="row">
+                        <div class="col-4 mb-3">
+                            <label class="form-label">Código do Produto (cProd)</label>
+                            <input type="text" class="form-control" value="{{ $produto->fiscal->cProd }}" readonly>
+                        </div>
+                        <div class="col-4 mb-3">
+                            <label class="form-label">Código de Barras (cEAN)</label>
+                            <input type="text" class="form-control" value="{{ $produto->fiscal->cEAN }}" readonly>
+                        </div>
+                        <div class="col-4 mb-3">
+                            <label class="form-label">Descrição do Produto (xProd)</label>
+                            <input type="text" class="form-control" value="{{ $produto->fiscal->xProd }}" readonly>
+                        </div>
+                        <div class="col-4 mb-3">
+                            <label class="form-label">NCM</label>
+                            <input type="text" class="form-control" value="{{ $produto->fiscal->NCM }}" readonly>
+                        </div>
+                        <div class="col-4 mb-3">
+                            <label class="form-label">CEST</label>
+                            <input type="text" class="form-control" value="{{ $produto->fiscal->CEST }}" readonly>
+                        </div>
+                        <div class="col-4 mb-3">
+                            <label class="form-label">CFOP</label>
+                            <input type="text" class="form-control" value="{{ $produto->fiscal->CFOP }}" readonly>
+                        </div>
+                        <div class="col-4 mb-3">
+                            <label class="form-label">Código de Barras Tributário (cEANTrib)</label>
+                            <input type="text" class="form-control" value="{{ $produto->fiscal->cEANTrib }}"
+                                readonly>
+                        </div>
+                        <div class="col-4 mb-3">
+                            <label class="form-label">CST</label>
+                            <input type="text" class="form-control" value="{{ $produto->fiscal->CST }}" readonly>
+                        </div>
+                        <div class="col-4 mb-3">
+                            <label class="form-label">pST</label>
+                            <input type="text" class="form-control" value="{{ $produto->fiscal->pST }}" readonly>
+                        </div>
+                    </div>
+                @else
+                    <p class="text-muted">Nenhum dado fiscal cadastrado para este produto.</p>
+                @endif
+            </div>
             <!-- Aba: Lotes -->
             <div class="tab-pane fade" id="lotes" role="tabpanel" aria-labelledby="lotes-tab">
                 @if ($produto->batches->isEmpty())
@@ -58,7 +109,8 @@
                 @else
                     <div class="row">
                         @foreach ($produto->batches as $batch)
-                        <p>Criado por {{ $batch->created_by ?? 'Desconhecido' }} as {{ \Carbon\Carbon::parse($batch->created_at)->format('d/m/Y H:i') }}</p>
+                            <p>Criado por {{ $batch->created_by ?? 'Desconhecido' }} as
+                                {{ \Carbon\Carbon::parse($batch->created_at)->format('d/m/Y H:i') }}</p>
                             <div class="row lote mb-3">
                                 <div class="col-4 mb-3">
                                     <label class="form-label">Quantidade</label>
@@ -66,13 +118,13 @@
                                 </div>
                                 <div class="col-4 mb-3">
                                     <label class="form-label">Preço de Custo</label>
-                                    <input type="text" class="form-control cost_price" value="{{ $batch->cost_price }}"
-                                        readonly>
+                                    <input type="text" class="form-control cost_price"
+                                        value="{{ $batch->cost_price }}" readonly>
                                 </div>
                                 <div class="col-4 mb-3">
                                     <label class="form-label">Preço de Venda</label>
-                                    <input type="text" class="form-control sale_price" value="{{ $batch->sale_price }}"
-                                        readonly>
+                                    <input type="text" class="form-control sale_price"
+                                        value="{{ $batch->sale_price }}" readonly>
                                 </div>
                                 <div class="col-4 mb-3">
                                     <label class="form-label">Data de Validade</label>
@@ -83,7 +135,8 @@
 
                                 <div class="col-4 mb-3">
                                     <label class="form-label">Código do Lote</label>
-                                    <input type="text" class="form-control" value="{{ $batch->batch_code }}" readonly>
+                                    <input type="text" class="form-control" value="{{ $batch->batch_code }}"
+                                        readonly>
                                 </div>
                                 <div class="col-4 mb-3">
                                     <label class="form-label">Markup Calculado (%)</label>

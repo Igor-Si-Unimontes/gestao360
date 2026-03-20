@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\FiscalRequest;
 use App\Http\Requests\ProductRequest;
 use App\Models\Category;
 use App\Models\Product;
@@ -23,16 +24,25 @@ class ProductController extends Controller
         return view('products.create', compact('categories', 'suppliers'));
     }
 
-    public function store(ProductRequest $request)
+    public function store(ProductRequest $request, FiscalRequest $fiscalRequest)
     {
-        Product::create($request->validated());
+        $product = Product::create($request->validated());
 
-        return redirect()->route('produtos.index')->with('success', 'Produto criado com sucesso.');
+        $fiscalData = $fiscalRequest->validated();
+
+        $fiscalData['product_id'] = $product->id;
+
+        if (collect($fiscalData)->except('product_id')->filter()->isNotEmpty()) {
+            $product->fiscal()->create($fiscalData);
+        }
+
+        return redirect()->route('produtos.index')
+            ->with('success', 'Produto criado com dados fiscais!');
     }
 
     public function show(Product $produto)
     {
-        $produto->load('category', 'supplier', 'batches');
+        $produto->load('category', 'supplier', 'batches', 'fiscal');
         return view('products.show', compact('produto'));
     }
 
@@ -40,7 +50,7 @@ class ProductController extends Controller
     {
         $categories = Category::where('status', 1)->get();
         $suppliers = Supplier::all();
-        $produto->load('category', 'supplier', 'batches');
+        $produto->load('category', 'supplier', 'batches', 'fiscal');
         return view('products.edit', compact('produto', 'categories', 'suppliers'));
     }
 

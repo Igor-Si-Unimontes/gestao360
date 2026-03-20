@@ -8,6 +8,7 @@ use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\FiscalController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SupplierController;
 
@@ -58,6 +59,9 @@ Route::middleware('auth')->group(function () {
     ->except(['create', 'store']);
     Route::patch('/lotes/{batch}/inativar', [BatchController::class, 'inativandoLote'])->name('lotes.inativarLote');
     Route::patch('/lotes/{batch}/ativar', [BatchController::class, 'ativandoLote'])->name('lotes.ativarLote');
+    //fiscal
+    Route::post('/fiscais', [FiscalController::class, 'store'])->name('fiscais.store');
+    Route::put('/fiscais/{fiscal}', [FiscalController::class, 'update'])->name('fiscais.update');    
     //outra rota
     Route::get('/profile', function () {
         return view('auth.profile');
