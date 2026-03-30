@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BatchController;
+use App\Http\Controllers\CaixaController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\UserController;
 use Illuminate\Routing\Router;
@@ -61,7 +62,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('/lotes/{batch}/ativar', [BatchController::class, 'ativandoLote'])->name('lotes.ativarLote');
     //fiscal
     Route::post('/fiscais', [FiscalController::class, 'store'])->name('fiscais.store');
-    Route::put('/fiscais/{fiscal}', [FiscalController::class, 'update'])->name('fiscais.update');    
+    Route::put('/fiscais/{fiscal}', [FiscalController::class, 'update'])->name('fiscais.update');  
+    
+    Route::get('/caixas', [CaixaController::class, 'index'])->name('caixas.index');
+    Route::post('/caixas/abrir', [CaixaController::class, 'abrirCaixa'])->name('caixas.abrir');
+    Route::post('/caixas/fechar', [CaixaController::class, 'fecharCaixa'])->name('caixas.fechar');
     //outra rota
     Route::get('/profile', function () {
         return view('auth.profile');
