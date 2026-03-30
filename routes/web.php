@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BalcaoController;
 use App\Http\Controllers\BatchController;
 use App\Http\Controllers\CaixaController;
 use App\Http\Controllers\CategoryController;
@@ -67,6 +68,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/caixas', [CaixaController::class, 'index'])->name('caixas.index');
     Route::post('/caixas/abrir', [CaixaController::class, 'abrirCaixa'])->name('caixas.abrir');
     Route::post('/caixas/fechar', [CaixaController::class, 'fecharCaixa'])->name('caixas.fechar');
+    
+    //pedidos
+    Route::get('/balcao', [BalcaoController::class, 'index'])->name('balcao');
     //outra rota
     Route::get('/profile', function () {
         return view('auth.profile');
