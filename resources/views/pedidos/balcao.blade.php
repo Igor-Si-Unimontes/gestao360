@@ -5,118 +5,437 @@
 @section('content')
     <x-layouts.breadcrumb title="Novo Pedido - Balcão" :breadcrumbs="[['name' => 'Vendas', 'route' => 'balcao'], ['name' => 'Novo Pedido - Balcão']]" />
 
-    <div class="container bg-white rounded" style="padding: 30px;" <form id="form-add-produto">
-        @csrf
 
-        <h5 class="mb-4">Detalhes do Produto</h5>
+    <div class="container bg-white rounded mb-5" style="padding: 30px;">
 
-        <div class="row">
-            <div class="col-md-6 mb-3">
+        <h5 class="mb-4">Detalhes do Pedido</h5>
+
+        <div class="row mb-3 g-3">
+            <div class="col-md-6">
                 <label class="form-label">Forma de Entrega</label>
                 <select id="forma_entrega" class="form-select" name="forma_entrega">
-                    <option value="">Selecione a forma de entrega</option>
-                    <option value="balcao">Balcão</option>
-                    <option value="entrega">Entrega</option>
-                    <option value="mesa">Mesa</option>
-                    <option value="retirada">Retirada</option>
+                    <option value="balcao" selected>Balcão</option>
+                    <option value="entrega">Entrega (Delivery)</option>
                 </select>
             </div>
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Tipo de Pedido</label>
-                <select id="tipo_pedido" class="form-select" name="tipo_pedido">
-                    <option value="">Selecione o tipo de pedido</option>
-                    <option value="delivey">Delivery</option>
-                    <option value="retirada">retirada</option>
-                    <option value="mesa">Mesa</option>
-                </select>
+
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">
+                    Forma de Pagamento <span class="text-danger">*</span>
+                </label>
+                <div class="d-flex flex-wrap gap-2 mt-1" id="forma_pagamento_group">
+                    <input type="radio" class="btn-check" name="forma_pagamento_ui" id="fp_dinheiro" value="DINHEIRO"
+                        autocomplete="off">
+                    <label class="btn btn-outline-secondary btn-sm" for="fp_dinheiro">
+                        <i class="fas fa-money-bill-wave me-1"></i> Dinheiro
+                    </label>
+
+                    <input type="radio" class="btn-check" name="forma_pagamento_ui" id="fp_pix" value="PIX"
+                        autocomplete="off">
+                    <label class="btn btn-outline-secondary btn-sm" for="fp_pix">
+                        <i class="fas fa-qrcode me-1"></i> PIX
+                    </label>
+
+                    <input type="radio" class="btn-check" name="forma_pagamento_ui" id="fp_debito" value="CARTAO_DEBITO"
+                        autocomplete="off">
+                    <label class="btn btn-outline-secondary btn-sm" for="fp_debito">
+                        <i class="fas fa-credit-card me-1"></i> Débito
+                    </label>
+
+                    <input type="radio" class="btn-check" name="forma_pagamento_ui" id="fp_credito" value="CARTAO_CREDITO"
+                        autocomplete="off">
+                    <label class="btn btn-outline-secondary btn-sm" for="fp_credito">
+                        <i class="fas fa-credit-card me-1"></i> Crédito
+                    </label>
+                </div>
+                <div id="fp_erro" class="text-danger small mt-1" style="display:none;">
+                    Selecione uma forma de pagamento.
+                </div>
             </div>
         </div>
-        <div class="row align-items-end">
 
-            <h5 class="mb-4">Produtos</h5>
-            
-            <div class="col-md-4 mb-3">
+        <hr class="my-4">
+
+        <h5 class="mb-3">Adicionar Produto</h5>
+
+        <div class="row align-items-end g-2">
+            <div class="col-md-4">
                 <label class="form-label">Produto</label>
-                <select id="nome_produto" class="form-select" name="nome_produto" onchange="buscarProduto(this.value)">
+                <select id="sel_produto" class="form-select">
                     <option value="">Selecione um produto</option>
                     @foreach ($produtos as $produto)
-                        <option value="{{ $produto->id }}">
-                            {{ $produto->name }}
-                        </option>
+                        <option value="{{ $produto->id }}">{{ $produto->name }}</option>
                     @endforeach
                 </select>
             </div>
 
-            <div class="col-md-2 mb-3">
-                <label class="form-label">Valor</label>
-                <input type="number" step="0.01" id="valor" name="valor" class="form-control" readonly>
+            <div class="col-md-2">
+                <label class="form-label">Valor Unit.</label>
+                <input type="text" id="inp_valor" class="form-control" readonly placeholder="R$ 0,00">
             </div>
 
-            <div class="col-md-2 mb-3">
+            <div class="col-md-2">
                 <label class="form-label">Quantidade</label>
-                <input type="number" step="0.001" id="quantidade" name="quantidade" class="form-control"
-                    oninput="calcularValorTotal()" readonly>
+                <input type="number" id="inp_quantidade" class="form-control" min="0.001" step="0.001" value="1"
+                    placeholder="1">
             </div>
 
-            <div class="col-md-2 mb-3">
+            <div class="col-md-2">
                 <label class="form-label">Total</label>
-                <input type="number" step="0.01" id="valor_total" name="valor_total" class="form-control" readonly>
+                <input type="text" id="inp_total" class="form-control" readonly placeholder="R$ 0,00">
             </div>
 
-            <div class="col-md-2 mb-3">
-                <button type="button" class="btn btn-purple w-100" onclick="submitProduto()" id="btn">
-                    Adicionar
+            <div class="col-md-2">
+                <button type="button" class="btn btn-purple w-100" onclick="adicionarProduto()">
+                    <i class="fas fa-plus me-1"></i> Adicionar
                 </button>
             </div>
-
         </div>
-        </form>
+
+        <p id="msg_estoque" class="text-muted small mt-1" style="display:none;"></p>
 
         <hr class="my-4">
 
-        <h5 class="mb-3">Itens Adicionados</h5>
+        <h5 class="mb-3">Itens do Pedido</h5>
 
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover align-middle">
+        <div class="table-responsive rounded-3 overflow-hidden border">
+            <table class="table table-bordered table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
                         <th>Produto</th>
-                        <th>Valor Unitário</th>
-                        <th>Quantidade</th>
-                        <th>Valor Total</th>
-                        <th class="text-center">Opções</th>
+                        <th style="width:140px">Valor Unit.</th>
+                        <th style="width:140px">Quantidade</th>
+                        <th style="width:140px">Valor Total</th>
+                        <th class="text-center" style="width:100px">Opções</th>
                     </tr>
                 </thead>
-
-                <tbody id="tabela_produtos"></tbody>
-
+                <tbody id="tabela_itens">
+                    <tr id="linha_vazia">
+                        <td colspan="5" class="text-center text-muted py-4">
+                            <i class="fas fa-shopping-cart me-2"></i>Nenhum produto adicionado ainda.
+                        </td>
+                    </tr>
+                </tbody>
             </table>
         </div>
-        <div class="row mt-4 mb-4">
-            <h5 class="mb-4">Resumo do Pedido</h5>
+
+        <div class="row mt-4 mb-2">
+            <h5 class="mb-3">Resumo do Pedido</h5>
 
             <div class="col-md-3">
-                <label for="valor_produtos">Produtos</label>
+                <div class="card border-0 bg-light p-3">
+                    <span class="text-muted small">Produtos</span>
+                    <span id="res_produtos" class="fw-bold fs-5">R$ 0,00</span>
+                </div>
             </div>
             <div class="col-md-3">
-                <label for="valor_entrega">Entrega</label>
+                <div class="card border-0 bg-light p-3">
+                    <span class="text-muted small">Entrega</span>
+                    <span id="res_entrega" class="fw-bold fs-5">R$ 0,00</span>
+                </div>
             </div>
             <div class="col-md-3">
-                <label for="valor_desconto">Desconto</label>
+                <div class="card border-0 bg-light p-3">
+                    <span class="text-muted small">Desconto</span>
+                    <span id="res_desconto" class="fw-bold fs-5">R$ 0,00</span>
+                </div>
             </div>
             <div class="col-md-3">
-                <label for="valor_total_geral">Total Geral</label>
+                <div class="card border-0 p-3" style="background:#f3e9fd;">
+                    <span class="text-muted small">Total Geral</span>
+                    <span id="res_total" class="fw-bold fs-5" style="color:#7212E7;">R$ 0,00</span>
+                </div>
             </div>
         </div>
 
-        <div class="row mt-5">
+        <div class="row mt-4">
             <div class="col-md-3">
-                <button class="btn btn-cancelar w-100">Cancelar</button>
+                <a href="{{ route('balcao') }}" class="btn btn-cancelar w-100">
+                    Cancelar
+                </a>
             </div>
             <div class="col-md-3">
-                <button class="btn btn-purple w-100">Finalizar Pedido</button>
+                <button type="button" class="btn btn-purple w-100" onclick="finalizarPedido()">
+                    <i class="fas fa-check me-1"></i> Finalizar Pedido
+                </button>
             </div>
+        </div>
 
+        {{-- Formulário oculto para POST --}}
+        <form id="form_finalizar" action="{{ route('vendas.store') }}" method="POST" style="display:none;">
+            @csrf
+            <input type="hidden" name="produtos" id="hidden_produtos">
+            <input type="hidden" name="forma_pagamento" id="hidden_forma_pagamento">
+        </form>
+
+    </div>
+
+    {{-- Modal de edição de quantidade --}}
+    <div class="modal fade" id="modalEditarQtd" tabindex="-1" aria-labelledby="modalEditarQtdLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="modalEditarQtdLabel">Editar Quantidade</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label class="form-label">Produto: <strong id="modal_nome_produto"></strong></label>
+                    <input type="number" id="modal_quantidade" class="form-control" min="0.001" step="0.001">
+                    <p class="text-muted small mt-1">Disponível em estoque: <span id="modal_estoque_disponivel"></span>
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary btn-sm"
+                        data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-purple btn-sm" onclick="confirmarEdicao()">Salvar</button>
+                </div>
+            </div>
         </div>
     </div>
+
+    <script>
+        // ── Dados de produtos vindos do backend ──────────────────────────
+        const produtoData = @json($produtoData);
+
+        // ── Estado local da lista de itens ───────────────────────────────
+        let itens = [];
+        let editandoIndex = null;
+
+        // ── Helpers de formatação ────────────────────────────────────────
+        function formatBRL(valor) {
+            return valor.toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            });
+        }
+
+        // ── Evento: produto selecionado ──────────────────────────────────
+        document.getElementById('sel_produto').addEventListener('change', function() {
+            const id = parseInt(this.value);
+            const inpValor = document.getElementById('inp_valor');
+            const inpQtd = document.getElementById('inp_quantidade');
+            const inpTotal = document.getElementById('inp_total');
+            const msgEstoque = document.getElementById('msg_estoque');
+
+            if (!id || !produtoData[id]) {
+                inpValor.value = '';
+                inpTotal.value = '';
+                inpQtd.value = '1';
+                msgEstoque.style.display = 'none';
+                return;
+            }
+
+            const preco = produtoData[id].sale_price;
+            const estoque = produtoData[id].available_quantity;
+
+            inpValor.value = formatBRL(preco);
+            inpQtd.value = '1';
+            inpTotal.value = formatBRL(preco * 1);
+            inpQtd.max = estoque;
+
+            msgEstoque.textContent = `Estoque disponível: ${estoque}`;
+            msgEstoque.style.display = 'block';
+        });
+
+        // ── Evento: quantidade alterada ──────────────────────────────────
+        document.getElementById('inp_quantidade').addEventListener('input', function() {
+            const id = parseInt(document.getElementById('sel_produto').value);
+            if (!id || !produtoData[id]) return;
+
+            const qtd = parseFloat(this.value) || 0;
+            const preco = produtoData[id].sale_price;
+            document.getElementById('inp_total').value = formatBRL(preco * qtd);
+        });
+
+        // ── Adicionar produto à lista ────────────────────────────────────
+        const toastrOpts = {
+            timeOut: 4000,
+            closeButton: true,
+            progressBar: true
+        };
+
+        function adicionarProduto() {
+            const sel = document.getElementById('sel_produto');
+            const id = parseInt(sel.value);
+            const nome = sel.options[sel.selectedIndex]?.text;
+            const qtd = parseFloat(document.getElementById('inp_quantidade').value) || 0;
+
+            if (!id) {
+                toastr.warning('Selecione um produto antes de adicionar.', 'Atenção', toastrOpts);
+                return;
+            }
+            if (qtd <= 0) {
+                toastr.warning('Informe uma quantidade válida.', 'Atenção', toastrOpts);
+                return;
+            }
+
+            const {
+                sale_price: preco,
+                available_quantity: estoque
+            } = produtoData[id];
+
+            // Verifica se já foi adicionado; se sim, soma a quantidade
+            const existente = itens.find(i => i.id === id);
+            const qtdJaAdicionada = existente ? existente.quantidade : 0;
+
+            if (qtdJaAdicionada + qtd > estoque) {
+                toastr.error(`Quantidade total excede o estoque disponível (${estoque}).`, 'Estoque insuficiente',
+                    toastrOpts);
+                return;
+            }
+
+            if (existente) {
+                existente.quantidade += qtd;
+                existente.valor_total = existente.valor_unitario * existente.quantidade;
+            } else {
+                itens.push({
+                    id,
+                    name: nome,
+                    valor_unitario: preco,
+                    quantidade: qtd,
+                    valor_total: preco * qtd,
+                });
+            }
+
+            toastr.success(`"${nome}" adicionado ao pedido.`, 'Produto adicionado', {
+                ...toastrOpts,
+                timeOut: 2500
+            });
+
+            // Reset inputs de seleção
+            sel.value = '';
+            document.getElementById('inp_valor').value = '';
+            document.getElementById('inp_quantidade').value = '1';
+            document.getElementById('inp_total').value = '';
+            document.getElementById('msg_estoque').style.display = 'none';
+
+            renderTabela();
+            atualizarResumo();
+        }
+
+        // ── Renderizar tabela de itens ───────────────────────────────────
+        function renderTabela() {
+            const tbody = document.getElementById('tabela_itens');
+            tbody.innerHTML = '';
+
+            if (itens.length === 0) {
+                tbody.innerHTML = `
+                    <tr id="linha_vazia">
+                        <td colspan="5" class="text-center text-muted py-4">
+                            <i class="fas fa-shopping-cart me-2"></i>Nenhum produto adicionado ainda.
+                        </td>
+                    </tr>`;
+                return;
+            }
+
+            itens.forEach((item, idx) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>${formatBRL(item.valor_unitario)}</td>
+                    <td>${item.quantidade}</td>
+                    <td>${formatBRL(item.valor_total)}</td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-outline-secondary me-1" title="Editar quantidade"
+                            onclick="abrirEdicao(${idx})">
+                            <i class="fas fa-pencil-alt"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" title="Remover produto"
+                            onclick="removerItem(${idx})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function removerItem(idx) {
+            itens.splice(idx, 1);
+            renderTabela();
+            atualizarResumo();
+        }
+
+        function abrirEdicao(idx) {
+            editandoIndex = idx;
+            const item = itens[idx];
+            document.getElementById('modal_nome_produto').textContent = item.name;
+            document.getElementById('modal_quantidade').value = item.quantidade;
+            document.getElementById('modal_quantidade').max = produtoData[item.id].available_quantity;
+            document.getElementById('modal_estoque_disponivel').textContent = produtoData[item.id].available_quantity;
+
+            const modal = new bootstrap.Modal(document.getElementById('modalEditarQtd'));
+            modal.show();
+        }
+
+        function confirmarEdicao() {
+            const novaQtd = parseFloat(document.getElementById('modal_quantidade').value) || 0;
+
+            if (novaQtd <= 0) {
+                toastr.warning('Informe uma quantidade válida.', 'Atenção', toastrOpts);
+                return;
+            }
+
+            const item = itens[editandoIndex];
+            const estoque = produtoData[item.id].available_quantity;
+
+            if (novaQtd > estoque) {
+                toastr.error(`Quantidade excede o estoque disponível (${estoque}).`, 'Estoque insuficiente', toastrOpts);
+                return;
+            }
+
+            item.quantidade = novaQtd;
+            item.valor_total = item.valor_unitario * novaQtd;
+
+            bootstrap.Modal.getInstance(document.getElementById('modalEditarQtd')).hide();
+            renderTabela();
+            atualizarResumo();
+        }
+
+        function atualizarResumo() {
+            const totalProdutos = itens.reduce((acc, i) => acc + i.valor_total, 0);
+            const entrega = 0;
+            const desconto = 0;
+            const total = totalProdutos + entrega - desconto;
+
+            document.getElementById('res_produtos').textContent = formatBRL(totalProdutos);
+            document.getElementById('res_entrega').textContent = formatBRL(entrega);
+            document.getElementById('res_desconto').textContent = formatBRL(desconto);
+            document.getElementById('res_total').textContent = formatBRL(total);
+        }
+
+        function finalizarPedido() {
+            if (itens.length === 0) {
+                toastr.warning('Adicione ao menos um produto ao pedido.', 'Pedido vazio', toastrOpts);
+                return;
+            }
+
+            const fpSelecionado = document.querySelector('input[name="forma_pagamento_ui"]:checked');
+            if (!fpSelecionado) {
+                document.getElementById('fp_erro').style.display = 'block';
+                toastr.warning('Selecione a forma de pagamento.', 'Atenção', toastrOpts);
+                document.getElementById('forma_pagamento_group').scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+                return;
+            }
+            document.getElementById('fp_erro').style.display = 'none';
+
+            const payload = itens.map(i => ({
+                id: i.id,
+                quantidade: i.quantidade,
+            }));
+
+            document.getElementById('hidden_produtos').value = JSON.stringify(payload);
+            document.getElementById('hidden_forma_pagamento').value = fpSelecionado.value;
+            document.getElementById('form_finalizar').submit();
+        }
+
+        document.querySelectorAll('input[name="forma_pagamento_ui"]').forEach(function(radio) {
+            radio.addEventListener('change', function() {
+                document.getElementById('fp_erro').style.display = 'none';
+            });
+        });
+    </script>
 @endsection

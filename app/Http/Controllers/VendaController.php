@@ -5,10 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Venda;
 use App\Models\VendaItem;
-use App\Models\Produtos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 
 class VendaController extends Controller
 {
@@ -16,71 +14,90 @@ class VendaController extends Controller
     {
         $produtos = json_decode($request->input('produtos'), true);
 
-        // 🔒 Validação básica
-        Validator::make(['produtos' => $produtos], [
-            'produtos' => 'required|array',
-            'produtos.*.id' => 'required|exists:produtos,id',
-            'produtos.*.quantidade' => 'required|integer|min:1',
-        ])->validate();
+        if (empty($produtos) || !is_array($produtos)) {
+            return redirect()->back()->with('error', 'Nenhum produto adicionado ao pedido.');
+        }
+
+        $formaPagamento = $request->input('forma_pagamento');
+        $formasValidas  = ['DINHEIRO', 'PIX', 'CARTAO_DEBITO', 'CARTAO_CREDITO'];
+
+        if (!in_array($formaPagamento, $formasValidas)) {
+            return redirect()->back()->with('error', 'Selecione uma forma de pagamento válida.');
+        }
 
         DB::beginTransaction();
 
         try {
-
-            // 🧾 Cria venda
             $venda = Venda::create([
-                'tipo' => 'RAPIDA',
-                'status' => 'FINALIZADA',
-                'forma_pagamento' => $request->forma_pagamento, // opcional por enquanto
-                'usuario_id' => auth()->id(),
-                'valor_total' => 0
+                'tipo'            => 'RAPIDA',
+                'status'          => 'FINALIZADA',
+                'forma_pagamento' => $formaPagamento,
+                'usuario_id'      => auth()->id(),
+                'valor_total'     => 0,
             ]);
 
             $valorTotal = 0;
 
             foreach ($produtos as $item) {
+                $product = Product::find($item['id']);
 
-                $produto = Product::find($item['id']);
-
-                if (!$produto) {
-                    throw new \Exception("Produto não encontrado");
+                if (!$product) {
+                    throw new \Exception("Produto ID {$item['id']} não encontrado.");
                 }
 
-                // 🔥 valida estoque
-                if ($produto->quantidade < $item['quantidade']) {
-                    throw new \Exception("Estoque insuficiente para {$produto->nome}");
+                $quantidadeNecessaria = (float) $item['quantidade'];
+
+                $estoqueDisponivel = $product->batches()
+                    ->where('active', true)
+                    ->where('quantity', '>', 0)
+                    ->sum('quantity');
+
+                if ($estoqueDisponivel < $quantidadeNecessaria) {
+                    throw new \Exception("Estoque insuficiente para \"{$product->name}\". Disponível: {$estoqueDisponivel}");
                 }
 
-                // 🔥 valor SEMPRE do banco
-                $valorUnitario = $produto->valor;
+                $loteReferencia = $product->batches()
+                    ->where('active', true)
+                    ->where('quantity', '>', 0)
+                    ->oldest()
+                    ->first();
 
-                $subtotal = $valorUnitario * $item['quantidade'];
+                $valorUnitario = $loteReferencia->sale_price;
+                $subtotal      = $valorUnitario * $quantidadeNecessaria;
 
-                // 📦 cria item
+                $lotes     = $product->batches()
+                    ->where('active', true)
+                    ->where('quantity', '>', 0)
+                    ->oldest()
+                    ->get();
+
+                $restante = $quantidadeNecessaria;
+                foreach ($lotes as $lote) {
+                    if ($restante <= 0) {
+                        break;
+                    }
+                    $deduzir  = min($lote->quantity, $restante);
+                    $lote->decrement('quantity', $deduzir);
+                    $restante -= $deduzir;
+                }
+
                 VendaItem::create([
-                    'venda_id' => $venda->id,
-                    'produto_id' => $produto->id,
-                    'quantidade' => $item['quantidade'],
+                    'venda_id'      => $venda->id,
+                    'produto_id'    => $product->id,
+                    'quantidade'    => $quantidadeNecessaria,
                     'valor_unitario' => $valorUnitario,
-                    'valor_total' => $subtotal,
+                    'valor_total'   => $subtotal,
                 ]);
-
-                // 📉 baixa estoque
-                $produto->decrement('quantidade', $item['quantidade']);
 
                 $valorTotal += $subtotal;
             }
 
-            // 💰 atualiza total
-            $venda->update([
-                'valor_total' => $valorTotal
-            ]);
+            $venda->update(['valor_total' => $valorTotal]);
 
             DB::commit();
 
-            return redirect()->back()->with('success', 'Venda criada com sucesso');
+            return redirect()->route('balcao')->with('success', 'Venda finalizada com sucesso!');
         } catch (\Exception $e) {
-
             DB::rollBack();
 
             return redirect()->back()->with('error', $e->getMessage());

@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BalcaoController;
 use App\Http\Controllers\BatchController;
+use App\Http\Controllers\VendaController;
 use App\Http\Controllers\CaixaController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\UserController;
@@ -71,6 +72,7 @@ Route::middleware('auth')->group(function () {
     
     //pedidos
     Route::get('/balcao', [BalcaoController::class, 'index'])->name('balcao');
+    Route::post('/vendas', [VendaController::class, 'store'])->name('vendas.store');
     //outra rota
     Route::get('/profile', function () {
         return view('auth.profile');
