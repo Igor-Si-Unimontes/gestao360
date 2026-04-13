@@ -11,7 +11,6 @@
         <table id="suppliersTable" class="table table-hover">
             <thead>
                 <tr>
-                    <th>Código</th>
                     <th>Nome</th>
                     <th>Taxa de Entrega</th>
                     <th class="text-center">Ações</th>
@@ -20,7 +19,6 @@
             <tbody>
                 @foreach ($bairros as $bairro)
                     <tr>
-                        <td>#{{ $bairro->id }}</td>
                         <td>{{ $bairro->nome }}</td>
                         <td>{{ $bairro->taxa }}</td>
                         <td class="text-center">
