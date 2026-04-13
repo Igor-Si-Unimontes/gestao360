@@ -90,6 +90,14 @@
             </a>
         </li>
 
+        <li class="nav-item">
+            <a href="{{ route('bairros.index') }}"
+               class="nav-link {{ request()->routeIs('bairros.*') ? 'active bg-purple-sidebar text-purple-active' : 'bg-white text-gray-sidebar' }} px-4 py-3 d-flex align-items-center group"
+               style="{{ request()->routeIs('bairros.*') ? 'border-left: 4px solid #7212E7; color: #7212E7;' : '' }}">
+                <i class="fas fa-motorcycle me-3 group-hover:text-[#7212E7]"></i>
+                <span class="group-hover:text-[#7212E7]">Taxa de Entrega</span>
+            </a>
+        </li>
     </ul>
 </nav>
 

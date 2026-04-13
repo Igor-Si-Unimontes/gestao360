@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BairrosController;
 use App\Http\Controllers\BalcaoController;
 use App\Http\Controllers\BatchController;
 use App\Http\Controllers\VendaController;
@@ -73,6 +74,9 @@ Route::middleware('auth')->group(function () {
     //pedidos
     Route::get('/balcao', [BalcaoController::class, 'index'])->name('balcao');
     Route::post('/vendas', [VendaController::class, 'store'])->name('vendas.store');
+
+    //taxa entrega
+    Route::resource('bairros', BairrosController::class);
     //outra rota
     Route::get('/profile', function () {
         return view('auth.profile');
