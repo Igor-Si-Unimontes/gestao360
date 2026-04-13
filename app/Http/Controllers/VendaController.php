@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bairros;
 use App\Models\Product;
 use App\Models\Venda;
 use App\Models\VendaItem;
@@ -25,6 +26,27 @@ class VendaController extends Controller
             return redirect()->back()->with('error', 'Selecione uma forma de pagamento válida.');
         }
 
+        $isDelivery  = $request->input('forma_entrega') === 'entrega';
+        $endereco    = null;
+        $bairroId    = null;
+        $taxaEntrega = 0;
+
+        if ($isDelivery) {
+            $endereco = trim($request->input('endereco', ''));
+            $bairroId = $request->input('bairro_id');
+
+            if (empty($endereco)) {
+                return redirect()->back()->with('error', 'Informe o endereço de entrega.');
+            }
+
+            $bairro = Bairros::find($bairroId);
+            if (!$bairro) {
+                return redirect()->back()->with('error', 'Selecione um bairro válido.');
+            }
+
+            $taxaEntrega = (float) $bairro->taxa;
+        }
+
         DB::beginTransaction();
 
         try {
@@ -34,6 +56,9 @@ class VendaController extends Controller
                 'forma_pagamento' => $formaPagamento,
                 'usuario_id'      => auth()->id(),
                 'valor_total'     => 0,
+                'endereco'        => $endereco,
+                'bairro_id'       => $bairroId,
+                'taxa_entrega'    => $taxaEntrega,
             ]);
 
             $valorTotal = 0;
@@ -92,7 +117,7 @@ class VendaController extends Controller
                 $valorTotal += $subtotal;
             }
 
-            $venda->update(['valor_total' => $valorTotal]);
+            $venda->update(['valor_total' => $valorTotal + $taxaEntrega]);
 
             DB::commit();
 

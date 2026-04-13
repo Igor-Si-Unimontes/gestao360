@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bairros;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -27,6 +28,8 @@ class BalcaoController extends Controller
             ];
         });
 
-        return view('pedidos.balcao', compact('produtos', 'produtoData'));
+        $bairros = Bairros::orderBy('nome')->get();
+
+        return view('pedidos.balcao', compact('produtos', 'produtoData', 'bairros'));
     }
 }

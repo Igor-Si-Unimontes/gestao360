@@ -13,7 +13,7 @@
         <div class="row mb-3 g-3">
             <div class="col-md-6">
                 <label class="form-label">Forma de Entrega</label>
-                <select id="forma_entrega" class="form-select" name="forma_entrega">
+                <select id="forma_entrega" class="form-select" name="forma_entrega" onchange="alternarEntrega(this.value)">
                     <option value="balcao" selected>Balcão</option>
                     <option value="entrega">Entrega (Delivery)</option>
                 </select>
@@ -50,6 +50,32 @@
                 </div>
                 <div id="fp_erro" class="text-danger small mt-1" style="display:none;">
                     Selecione uma forma de pagamento.
+                </div>
+            </div>
+        </div>
+
+        <div id="bloco_delivery" style="display:none;">
+            <hr class="my-3">
+            <h6 class="mb-3 text-muted">
+                <i class="fas fa-motorcycle me-1"></i> Dados da Entrega
+            </h6>
+            <div class="row g-3 mb-2">
+                <div class="col-md-7">
+                    <label class="form-label">Endereço completo <span class="text-danger">*</span></label>
+                    <input type="text" id="inp_endereco" class="form-control"
+                        placeholder="Ex: Rua das Flores, 123, Apto 4">
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label">Bairro <span class="text-danger">*</span></label>
+                    <select id="sel_bairro" class="form-select" onchange="selecionarBairro(this)">
+                        <option value="">Selecione o bairro</option>
+                        @foreach ($bairros as $bairro)
+                            <option value="{{ $bairro->id }}" data-taxa="{{ $bairro->taxa }}">
+                                {{ $bairro->nome }}
+                                — R$ {{ number_format($bairro->taxa, 2, ',', '.') }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
         </div>
@@ -161,16 +187,17 @@
             </div>
         </div>
 
-        {{-- Formulário oculto para POST --}}
         <form id="form_finalizar" action="{{ route('vendas.store') }}" method="POST" style="display:none;">
             @csrf
             <input type="hidden" name="produtos" id="hidden_produtos">
             <input type="hidden" name="forma_pagamento" id="hidden_forma_pagamento">
+            <input type="hidden" name="forma_entrega" id="hidden_forma_entrega" value="balcao">
+            <input type="hidden" name="endereco" id="hidden_endereco">
+            <input type="hidden" name="bairro_id" id="hidden_bairro_id">
         </form>
 
     </div>
 
-    {{-- Modal de edição de quantidade --}}
     <div class="modal fade" id="modalEditarQtd" tabindex="-1" aria-labelledby="modalEditarQtdLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-sm modal-dialog-centered">
@@ -195,22 +222,42 @@
     </div>
 
     <script>
-        // ── Dados de produtos vindos do backend ──────────────────────────
         const produtoData = @json($produtoData);
 
-        // ── Estado local da lista de itens ───────────────────────────────
         let itens = [];
         let editandoIndex = null;
+        let taxaEntregaAtual = 0;
+        let isDelivery = false;
 
-        // ── Helpers de formatação ────────────────────────────────────────
         function formatBRL(valor) {
-            return valor.toLocaleString('pt-BR', {
-                style: 'currency',
-                currency: 'BRL'
-            });
+            return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         }
 
-        // ── Evento: produto selecionado ──────────────────────────────────
+        const toastrOpts = { timeOut: 4000, closeButton: true, progressBar: true };
+
+        function alternarEntrega(valor) {
+            isDelivery = (valor === 'entrega');
+            document.getElementById('bloco_delivery').style.display = isDelivery ? 'block' : 'none';
+            document.getElementById('hidden_forma_entrega').value = valor;
+
+            if (!isDelivery) {
+                taxaEntregaAtual = 0;
+                document.getElementById('inp_endereco').value     = '';
+                document.getElementById('sel_bairro').value       = '';
+                document.getElementById('hidden_endereco').value  = '';
+                document.getElementById('hidden_bairro_id').value = '';
+            }
+
+            atualizarResumo();
+        }
+
+        function selecionarBairro(sel) {
+            const opt = sel.options[sel.selectedIndex];
+            taxaEntregaAtual = sel.value ? parseFloat(opt.dataset.taxa) || 0 : 0;
+            document.getElementById('hidden_bairro_id').value = sel.value;
+            atualizarResumo();
+        }
+
         document.getElementById('sel_produto').addEventListener('change', function() {
             const id = parseInt(this.value);
             const inpValor = document.getElementById('inp_valor');
@@ -238,7 +285,6 @@
             msgEstoque.style.display = 'block';
         });
 
-        // ── Evento: quantidade alterada ──────────────────────────────────
         document.getElementById('inp_quantidade').addEventListener('input', function() {
             const id = parseInt(document.getElementById('sel_produto').value);
             if (!id || !produtoData[id]) return;
@@ -247,13 +293,6 @@
             const preco = produtoData[id].sale_price;
             document.getElementById('inp_total').value = formatBRL(preco * qtd);
         });
-
-        // ── Adicionar produto à lista ────────────────────────────────────
-        const toastrOpts = {
-            timeOut: 4000,
-            closeButton: true,
-            progressBar: true
-        };
 
         function adicionarProduto() {
             const sel = document.getElementById('sel_produto');
@@ -275,7 +314,6 @@
                 available_quantity: estoque
             } = produtoData[id];
 
-            // Verifica se já foi adicionado; se sim, soma a quantidade
             const existente = itens.find(i => i.id === id);
             const qtdJaAdicionada = existente ? existente.quantidade : 0;
 
@@ -303,7 +341,6 @@
                 timeOut: 2500
             });
 
-            // Reset inputs de seleção
             sel.value = '';
             document.getElementById('inp_valor').value = '';
             document.getElementById('inp_quantidade').value = '1';
@@ -314,7 +351,6 @@
             atualizarResumo();
         }
 
-        // ── Renderizar tabela de itens ───────────────────────────────────
         function renderTabela() {
             const tbody = document.getElementById('tabela_itens');
             tbody.innerHTML = '';
@@ -394,14 +430,14 @@
 
         function atualizarResumo() {
             const totalProdutos = itens.reduce((acc, i) => acc + i.valor_total, 0);
-            const entrega = 0;
+            const entrega  = taxaEntregaAtual;
             const desconto = 0;
-            const total = totalProdutos + entrega - desconto;
+            const total    = totalProdutos + entrega - desconto;
 
             document.getElementById('res_produtos').textContent = formatBRL(totalProdutos);
-            document.getElementById('res_entrega').textContent = formatBRL(entrega);
+            document.getElementById('res_entrega').textContent  = formatBRL(entrega);
             document.getElementById('res_desconto').textContent = formatBRL(desconto);
-            document.getElementById('res_total').textContent = formatBRL(total);
+            document.getElementById('res_total').textContent    = formatBRL(total);
         }
 
         function finalizarPedido() {
@@ -414,20 +450,32 @@
             if (!fpSelecionado) {
                 document.getElementById('fp_erro').style.display = 'block';
                 toastr.warning('Selecione a forma de pagamento.', 'Atenção', toastrOpts);
-                document.getElementById('forma_pagamento_group').scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center'
-                });
+                document.getElementById('forma_pagamento_group').scrollIntoView({ behavior: 'smooth', block: 'center' });
                 return;
             }
             document.getElementById('fp_erro').style.display = 'none';
 
-            const payload = itens.map(i => ({
-                id: i.id,
-                quantidade: i.quantidade,
-            }));
+            if (isDelivery) {
+                const endereco = document.getElementById('inp_endereco').value.trim();
+                const bairroId = document.getElementById('sel_bairro').value;
 
-            document.getElementById('hidden_produtos').value = JSON.stringify(payload);
+                if (!endereco) {
+                    toastr.warning('Informe o endereço de entrega.', 'Atenção', toastrOpts);
+                    document.getElementById('inp_endereco').focus();
+                    return;
+                }
+                if (!bairroId) {
+                    toastr.warning('Selecione o bairro de entrega.', 'Atenção', toastrOpts);
+                    document.getElementById('sel_bairro').focus();
+                    return;
+                }
+
+                document.getElementById('hidden_endereco').value = endereco;
+            }
+
+            const payload = itens.map(i => ({ id: i.id, quantidade: i.quantidade }));
+
+            document.getElementById('hidden_produtos').value        = JSON.stringify(payload);
             document.getElementById('hidden_forma_pagamento').value = fpSelecionado.value;
             document.getElementById('form_finalizar').submit();
         }
