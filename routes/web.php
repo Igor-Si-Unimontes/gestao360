@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BairrosController;
 use App\Http\Controllers\BalcaoController;
 use App\Http\Controllers\BatchController;
+use App\Http\Controllers\MesaController;
 use App\Http\Controllers\VendaController;
 use App\Http\Controllers\CaixaController;
 use App\Http\Controllers\CategoryController;
@@ -74,6 +75,15 @@ Route::middleware('auth')->group(function () {
     //pedidos
     Route::get('/balcao', [BalcaoController::class, 'index'])->name('balcao');
     Route::post('/vendas', [VendaController::class, 'store'])->name('vendas.store');
+
+    //mesas
+    Route::get('/mesas', [MesaController::class, 'index'])->name('mesas.index');
+    Route::post('/mesas/{mesa}/abrir', [MesaController::class, 'abrirMesa'])->name('mesas.abrir');
+    Route::get('/mesas/{mesa}/comanda', [MesaController::class, 'comanda'])->name('mesas.comanda');
+    Route::post('/mesas/{mesa}/item', [MesaController::class, 'adicionarItem'])->name('mesas.item.add');
+    Route::delete('/mesas/{mesa}/item/{item}', [MesaController::class, 'removerItem'])->name('mesas.item.remove');
+    Route::post('/mesas/{mesa}/fechar', [MesaController::class, 'fecharMesa'])->name('mesas.fechar');
+    Route::post('/mesas/{mesa}/cancelar', [MesaController::class, 'cancelarMesa'])->name('mesas.cancelar');
 
     //taxa entrega
     Route::resource('bairros', BairrosController::class);

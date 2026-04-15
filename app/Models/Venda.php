@@ -13,6 +13,7 @@ class Venda extends Model
         'forma_pagamento',
         'usuario_id',
         'caixa_id',
+        'mesa_id',
         'endereco',
         'bairro_id',
         'taxa_entrega',
@@ -21,6 +22,11 @@ class Venda extends Model
     public function bairro()
     {
         return $this->belongsTo(Bairros::class, 'bairro_id');
+    }
+
+    public function mesa()
+    {
+        return $this->belongsTo(Mesa::class);
     }
 
     public function itens()

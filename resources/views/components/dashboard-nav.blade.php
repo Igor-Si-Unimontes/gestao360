@@ -85,8 +85,16 @@
             <a href="{{ route('balcao') }}"
                class="nav-link {{ request()->routeIs('balcao') ? 'active bg-purple-sidebar text-purple-active' : 'bg-white text-gray-sidebar' }} px-4 py-3 d-flex align-items-center group"
                style="{{ request()->routeIs('balcao') ? 'border-left: 4px solid #7212E7; color: #7212E7;' : '' }}">
-                <i class="fas fa-cash-register me-3 group-hover:text-[#7212E7]"></i>
-                <span class="group-hover:text-[#7212E7]">Balcão</span>
+                <i class="fas fa-cash-register me-3" style="{{ request()->routeIs('balcao') ? 'color:#7212E7;' : '' }}"></i>
+                <span>Balcão</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('mesas.index') }}"
+               class="nav-link {{ request()->routeIs('mesas.*') ? 'active bg-purple-sidebar text-purple-active' : 'bg-white text-gray-sidebar' }} px-4 py-3 d-flex align-items-center group"
+               style="{{ request()->routeIs('mesas.*') ? 'border-left: 4px solid #7212E7; color: #7212E7;' : '' }}">
+                <i class="fas fa-chair me-3" style="{{ request()->routeIs('mesas.*') ? 'color:#7212E7;' : '' }}"></i>
+                <span>Mesas</span>
             </a>
         </li>
 
