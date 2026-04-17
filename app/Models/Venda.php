@@ -17,6 +17,7 @@ class Venda extends Model
         'endereco',
         'bairro_id',
         'taxa_entrega',
+        'observacao',
     ];
 
     public function bairro()

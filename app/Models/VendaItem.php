@@ -13,7 +13,8 @@ class VendaItem extends Model
         'produto_id',
         'quantidade',
         'valor_unitario',
-        'valor_total'
+        'valor_total',
+        'status',
     ];
 
     public function venda()

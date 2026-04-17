@@ -47,10 +47,10 @@ class MesaController extends Controller
             ->pluck('total', 'produto_id');
 
         return $produtos->mapWithKeys(function ($produto) use ($reservas) {
-            $loteAntigo   = $produto->batches->first();
-            $totalFisico  = (float) $produto->batches->sum('quantity');
-            $reservado    = (float) ($reservas[$produto->id] ?? 0);
-            $disponivel   = max(0, $totalFisico - $reservado);
+            $loteAntigo  = $produto->batches->first();
+            $totalFisico = (float) $produto->batches->sum('quantity');
+            $reservado   = (float) ($reservas[$produto->id] ?? 0);
+            $disponivel  = max(0, $totalFisico - $reservado);
 
             return [
                 $produto->id => [
@@ -70,11 +70,16 @@ class MesaController extends Controller
             'valor_unitario' => (float) $i->valor_unitario,
             'quantidade'     => (float) $i->quantidade,
             'valor_total'    => (float) $i->valor_total,
+            'status'         => $i->status,
         ])->values()->toArray();
 
+        $emPreparo = array_filter($itens, fn($i) => $i['status'] === 'EM_PREPARO');
+
         return [
-            'items'       => $itens,
-            'total_geral' => array_sum(array_column($itens, 'valor_total')),
+            'items'           => $itens,
+            'total_geral'     => array_sum(array_column($itens, 'valor_total')),
+            'tem_em_preparo'  => count($emPreparo) > 0,
+            'qtd_em_preparo'  => count($emPreparo),
         ];
     }
 
@@ -105,8 +110,7 @@ class MesaController extends Controller
         }])->get();
 
         $produtoData = $this->buildProdutoData($produtos, $venda->id);
-
-        $itensData = $this->buildItensData($venda);
+        $itensData   = $this->buildItensData($venda);
 
         return view('mesas.comanda', compact('mesa', 'venda', 'produtos', 'produtoData', 'itensData'));
     }
@@ -148,6 +152,7 @@ class MesaController extends Controller
 
         $product    = Product::find($request->produto_id);
         $quantidade = (float) $request->quantidade;
+        $destino    = $request->input('destino', 'instant');
 
         if (!$product) {
             return response()->json(['error' => 'Produto não encontrado.'], 404);
@@ -157,7 +162,6 @@ class MesaController extends Controller
         }
 
         $disponivel = $this->estoqueDisponivel($product->id, $venda->id);
-
         if ($disponivel < $quantidade) {
             return response()->json([
                 'error' => "Estoque insuficiente para \"{$product->name}\". Disponível: {$disponivel}",
@@ -167,6 +171,7 @@ class MesaController extends Controller
         try {
             $loteRef       = $product->batches()->where('active', true)->where('quantity', '>', 0)->oldest()->first();
             $valorUnitario = $loteRef->sale_price;
+            $itemStatus    = $destino === 'cozinha' ? 'EM_PREPARO' : 'ENTREGUE';
 
             VendaItem::create([
                 'venda_id'       => $venda->id,
@@ -174,6 +179,7 @@ class MesaController extends Controller
                 'quantidade'     => $quantidade,
                 'valor_unitario' => $valorUnitario,
                 'valor_total'    => $valorUnitario * $quantidade,
+                'status'         => $itemStatus,
             ]);
 
             $venda->update(['valor_total' => $venda->itens()->sum('valor_total')]);
@@ -230,7 +236,6 @@ class MesaController extends Controller
                 }
 
                 $estoqueAtual = $product->batches()->where('active', true)->sum('quantity');
-
                 if ($estoqueAtual < $item->quantidade) {
                     throw new \Exception(
                         "Estoque insuficiente para \"{$product->name}\"." .
@@ -256,7 +261,6 @@ class MesaController extends Controller
             ]);
 
             $mesa->update(['status' => 'livre']);
-
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();

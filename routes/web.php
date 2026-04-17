@@ -3,8 +3,10 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BairrosController;
 use App\Http\Controllers\BalcaoController;
+use App\Http\Controllers\CozinhaController;
 use App\Http\Controllers\BatchController;
 use App\Http\Controllers\MesaController;
+use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\VendaController;
 use App\Http\Controllers\CaixaController;
 use App\Http\Controllers\CategoryController;
@@ -75,6 +77,17 @@ Route::middleware('auth')->group(function () {
     //pedidos
     Route::get('/balcao', [BalcaoController::class, 'index'])->name('balcao');
     Route::post('/vendas', [VendaController::class, 'store'])->name('vendas.store');
+
+    //cozinha
+    Route::get('/cozinha', [CozinhaController::class, 'index'])->name('cozinha.index');
+    Route::get('/cozinha/pedidos', [CozinhaController::class, 'pedidos'])->name('cozinha.pedidos');
+    Route::patch('/cozinha/{venda}/pronto', [CozinhaController::class, 'marcarPronto'])->name('cozinha.pronto');
+
+    //historico de pedidos
+    Route::get('/pedidos', [PedidoController::class, 'index'])->name('pedidos.index');
+    Route::get('/pedidos/{pedido}', [PedidoController::class, 'show'])->name('pedidos.show');
+    Route::patch('/pedidos/{pedido}/status', [PedidoController::class, 'updateStatus'])->name('pedidos.status');
+    Route::delete('/pedidos/{pedido}', [PedidoController::class, 'destroy'])->name('pedidos.destroy');
 
     //mesas
     Route::get('/mesas', [MesaController::class, 'index'])->name('mesas.index');

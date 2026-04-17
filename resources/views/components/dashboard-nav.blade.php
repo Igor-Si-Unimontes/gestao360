@@ -97,6 +97,22 @@
                 <span>Mesas</span>
             </a>
         </li>
+        <li class="nav-item">
+            <a href="{{ route('cozinha.index') }}"
+               class="nav-link {{ request()->routeIs('cozinha.*') ? 'active bg-purple-sidebar text-purple-active' : 'bg-white text-gray-sidebar' }} px-4 py-3 d-flex align-items-center group"
+               style="{{ request()->routeIs('cozinha.*') ? 'border-left: 4px solid #7212E7; color: #7212E7;' : '' }}">
+                <i class="fas fa-fire-burner me-3" style="{{ request()->routeIs('cozinha.*') ? 'color:#7212E7;' : '' }}"></i>
+                <span>Cozinha</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('pedidos.index') }}"
+               class="nav-link {{ request()->routeIs('pedidos.*') ? 'active bg-purple-sidebar text-purple-active' : 'bg-white text-gray-sidebar' }} px-4 py-3 d-flex align-items-center group"
+               style="{{ request()->routeIs('pedidos.*') ? 'border-left: 4px solid #7212E7; color: #7212E7;' : '' }}">
+                <i class="fas fa-receipt me-3" style="{{ request()->routeIs('pedidos.*') ? 'color:#7212E7;' : '' }}"></i>
+                <span>Pedidos</span>
+            </a>
+        </li>
 
         <li class="nav-item">
             <a href="{{ route('bairros.index') }}"

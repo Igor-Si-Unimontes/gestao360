@@ -176,12 +176,19 @@
 
         <div class="row mt-4">
             <div class="col-md-3">
-                <a href="{{ route('balcao') }}" class="btn btn-cancelar w-100">
+                <a href="{{ route('balcao') }}" class="btn btn-outline-secondary w-100">
                     Cancelar
                 </a>
             </div>
             <div class="col-md-3">
-                <button type="button" class="btn btn-purple w-100" onclick="finalizarPedido()">
+                <button type="button" class="btn btn-outline-warning w-100"
+                    onclick="finalizarPedido('cozinha')"
+                    title="Registra o pedido e envia para a cozinha preparar. O pagamento fica para depois.">
+                    <i class="fas fa-fire-burner me-1"></i> Enviar para Cozinha
+                </button>
+            </div>
+            <div class="col-md-3">
+                <button type="button" class="btn btn-purple w-100" onclick="finalizarPedido('finalizar')">
                     <i class="fas fa-check me-1"></i> Finalizar Pedido
                 </button>
             </div>
@@ -194,8 +201,41 @@
             <input type="hidden" name="forma_entrega" id="hidden_forma_entrega" value="balcao">
             <input type="hidden" name="endereco" id="hidden_endereco">
             <input type="hidden" name="bairro_id" id="hidden_bairro_id">
+            <input type="hidden" name="acao" id="hidden_acao" value="finalizar">
+            <input type="hidden" name="observacao" id="hidden_observacao">
         </form>
 
+    </div>
+
+    <div class="modal fade" id="modalCozinha" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" style="background:#fffbeb; border-bottom-color:#fde68a;">
+                    <h5 class="modal-title" style="color:#92400e;">
+                        <i class="fas fa-fire-burner me-2"></i>Enviar para a Cozinha
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small mb-2">Itens que serão enviados:</p>
+                    <ul id="modal_cozinha_itens" class="list-group list-group-flush mb-3"></ul>
+
+                    <label class="form-label fw-semibold">
+                        <i class="fas fa-comment-alt me-1 text-warning"></i>
+                        Observação para a cozinha
+                        <span class="text-muted fw-normal">(opcional)</span>
+                    </label>
+                    <textarea id="inp_observacao" class="form-control" rows="2"
+                        placeholder="Ex: sem cebola, bem passado, alergia a amendoim…"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-warning text-dark fw-semibold" onclick="confirmarCozinha()">
+                        <i class="fas fa-fire-burner me-1"></i> Confirmar envio
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="modal fade" id="modalEditarQtd" tabindex="-1" aria-labelledby="modalEditarQtdLabel"
@@ -440,14 +480,53 @@
             document.getElementById('res_total').textContent    = formatBRL(total);
         }
 
-        function finalizarPedido() {
+        const brl = (v) => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+        function confirmarCozinha() {
+            const obs = document.getElementById('inp_observacao').value.trim();
+            document.getElementById('hidden_observacao').value = obs;
+            document.getElementById('hidden_acao').value       = 'cozinha';
+            document.getElementById('hidden_forma_pagamento').value = '';
+
+            bootstrap.Modal.getInstance(document.getElementById('modalCozinha')).hide();
+
+            if (isDelivery) {
+                const endereco = document.getElementById('inp_endereco').value.trim();
+                const bairroId = document.getElementById('sel_bairro').value;
+                if (!endereco) { toastr.warning('Informe o endereço de entrega.', 'Atenção', toastrOpts); return; }
+                if (!bairroId) { toastr.warning('Selecione o bairro de entrega.', 'Atenção', toastrOpts); return; }
+                document.getElementById('hidden_endereco').value = endereco;
+            }
+
+            const payload = itens.map(i => ({ id: i.id, quantidade: i.quantidade }));
+            document.getElementById('hidden_produtos').value = JSON.stringify(payload);
+            document.getElementById('form_finalizar').submit();
+        }
+
+        function finalizarPedido(acao = 'finalizar') {
             if (itens.length === 0) {
                 toastr.warning('Adicione ao menos um produto ao pedido.', 'Pedido vazio', toastrOpts);
                 return;
             }
 
+            // Envio para cozinha: abre modal de confirmação com observação
+            if (acao === 'cozinha') {
+                const ul = document.getElementById('modal_cozinha_itens');
+                ul.innerHTML = '';
+                itens.forEach(i => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item d-flex justify-content-between py-1 px-0';
+                    li.innerHTML = `<span>${i.name}</span><span class="text-muted">${i.quantidade}x ${brl(i.valor_unitario)}</span>`;
+                    ul.appendChild(li);
+                });
+                document.getElementById('inp_observacao').value = '';
+                new bootstrap.Modal(document.getElementById('modalCozinha')).show();
+                return;
+            }
+
+            // Pagamento só é obrigatório na finalização direta
             const fpSelecionado = document.querySelector('input[name="forma_pagamento_ui"]:checked');
-            if (!fpSelecionado) {
+            if (acao === 'finalizar' && !fpSelecionado) {
                 document.getElementById('fp_erro').style.display = 'block';
                 toastr.warning('Selecione a forma de pagamento.', 'Atenção', toastrOpts);
                 document.getElementById('forma_pagamento_group').scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -476,7 +555,8 @@
             const payload = itens.map(i => ({ id: i.id, quantidade: i.quantidade }));
 
             document.getElementById('hidden_produtos').value        = JSON.stringify(payload);
-            document.getElementById('hidden_forma_pagamento').value = fpSelecionado.value;
+            document.getElementById('hidden_forma_pagamento').value = fpSelecionado ? fpSelecionado.value : '';
+            document.getElementById('hidden_acao').value            = acao;
             document.getElementById('form_finalizar').submit();
         }
 

@@ -20,9 +20,10 @@ class VendaController extends Controller
         }
 
         $formaPagamento = $request->input('forma_pagamento');
-        $formasValidas  = ['DINHEIRO', 'PIX', 'CARTAO_DEBITO', 'CARTAO_CREDITO'];
+        $formasValidas   = ['DINHEIRO', 'PIX', 'CARTAO_DEBITO', 'CARTAO_CREDITO'];
+        $enviandoCozinha = $request->input('acao') === 'cozinha';
 
-        if (!in_array($formaPagamento, $formasValidas)) {
+        if (!$enviandoCozinha && !in_array($formaPagamento, $formasValidas)) {
             return redirect()->back()->with('error', 'Selecione uma forma de pagamento válida.');
         }
 
@@ -47,18 +48,21 @@ class VendaController extends Controller
             $taxaEntrega = (float) $bairro->taxa;
         }
 
+        $statusInicial = $request->input('acao') === 'cozinha' ? 'EM_PREPARO' : 'FINALIZADA';
+
         DB::beginTransaction();
 
         try {
             $venda = Venda::create([
-                'tipo'            => 'RAPIDA',
-                'status'          => 'FINALIZADA',
-                'forma_pagamento' => $formaPagamento,
+                'tipo'            => $isDelivery ? 'DELIVERY' : 'RAPIDA',
+                'status'          => $statusInicial,
+                'forma_pagamento' => $statusInicial === 'FINALIZADA' ? $formaPagamento : null,
                 'usuario_id'      => auth()->id(),
                 'valor_total'     => 0,
                 'endereco'        => $endereco,
                 'bairro_id'       => $bairroId,
                 'taxa_entrega'    => $taxaEntrega,
+                'observacao'      => trim($request->input('observacao', '')) ?: null,
             ]);
 
             $valorTotal = 0;
@@ -121,7 +125,11 @@ class VendaController extends Controller
 
             DB::commit();
 
-            return redirect()->route('balcao')->with('success', 'Venda finalizada com sucesso!');
+            $msg = $statusInicial === 'EM_PREPARO'
+                ? 'Pedido enviado para a cozinha!'
+                : 'Venda finalizada com sucesso!';
+
+            return redirect()->route('balcao')->with('success', $msg);
         } catch (\Exception $e) {
             DB::rollBack();
 

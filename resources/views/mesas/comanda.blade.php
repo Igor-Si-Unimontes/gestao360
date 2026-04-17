@@ -15,8 +15,12 @@
 
         <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
             <div class="d-flex align-items-center gap-2">
-                <span class="badge bg-danger px-3 py-2" style="font-size: 1rem;">
+                <span class="badge bg-danger px-3 py-2" style="font-size:1rem;">
                     <i class="fas fa-utensils me-1"></i> Mesa {{ $mesa->numero }}
+                </span>
+                <span class="badge bg-secondary" id="badge_em_preparo" style="display:none;">
+                    <i class="fas fa-fire-burner me-1"></i>
+                    <span id="qtd_em_preparo">0</span> itens na cozinha
                 </span>
                 <span class="text-muted small">
                     Aberta às {{ $venda->created_at->format('H:i') }}
@@ -69,9 +73,14 @@
                         <input type="text" id="inp_total" class="form-control" readonly placeholder="R$ 0,00">
                     </div>
 
-                    <button type="button" class="btn btn-purple w-100" id="btn_adicionar" onclick="adicionarItem()">
-                        <i class="fas fa-plus me-1"></i> Adicionar à Comanda
-                    </button>
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-purple" id="btn_instant" onclick="adicionarItem('instant')">
+                            <i class="fas fa-bolt me-1"></i> Adicionar (instantâneo)
+                        </button>
+                        <button type="button" class="btn btn-outline-warning text-dark" id="btn_cozinha" onclick="adicionarItem('cozinha')">
+                            <i class="fas fa-fire-burner me-1"></i> Enviar para a Cozinha
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -86,10 +95,11 @@
                             <thead class="table-light">
                                 <tr>
                                     <th>Produto</th>
-                                    <th style="width:110px">Unit.</th>
-                                    <th style="width:90px">Qtd.</th>
-                                    <th style="width:110px">Total</th>
-                                    <th class="text-center" style="width:60px"></th>
+                                    <th style="width:100px">Unit.</th>
+                                    <th style="width:80px">Qtd.</th>
+                                    <th style="width:100px">Total</th>
+                                    <th style="width:110px">Status</th>
+                                    <th class="text-center" style="width:50px"></th>
                                 </tr>
                             </thead>
                             <tbody id="tabela_itens"></tbody>
@@ -119,6 +129,10 @@
                 <form action="{{ route('mesas.fechar', $mesa) }}" method="POST">
                     @csrf
                     <div class="modal-body">
+                        <div id="aviso_em_preparo" class="alert alert-warning d-flex align-items-center gap-2 mb-3" style="display:none!important;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Há itens ainda em preparo na cozinha. Tem certeza que deseja fechar?</span>
+                        </div>
                         <div class="alert alert-light border text-center mb-3">
                             <div class="text-muted small">Total a pagar</div>
                             <div id="modal_total" class="fw-bold fs-4" style="color:#7212E7;">R$ 0,00</div>
@@ -178,17 +192,14 @@
                 </div>
                 <div class="modal-body pt-0">
                     <p class="text-muted small">
-                        Todos os itens serão removidos e o estoque será restaurado.
-                        Esta ação não pode ser desfeita.
+                        Todos os itens serão removidos. Esta ação não pode ser desfeita.
                     </p>
                 </div>
                 <div class="modal-footer border-0 pt-0">
                     <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Não</button>
                     <form action="{{ route('mesas.cancelar', $mesa) }}" method="POST">
                         @csrf
-                        <button type="submit" class="btn btn-danger btn-sm">
-                            Sim, cancelar mesa
-                        </button>
+                        <button type="submit" class="btn btn-danger btn-sm">Sim, cancelar mesa</button>
                     </form>
                 </div>
             </div>
@@ -207,6 +218,12 @@
 
         const brl = (v) => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
+        const STATUS_BADGE = {
+            EM_PREPARO: '<span class="badge bg-warning text-dark"><i class="fas fa-fire-burner me-1"></i>Cozinha</span>',
+            ENTREGUE:   '<span class="badge bg-success"><i class="fas fa-check me-1"></i>Entregue</span>',
+            PENDENTE:   '<span class="badge bg-secondary">Pendente</span>',
+        };
+
         function renderComanda(data) {
             comanda = data;
             const tbody = document.getElementById('tabela_itens');
@@ -215,18 +232,20 @@
             if (!data.items || data.items.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="5" class="text-center text-muted py-4">
+                        <td colspan="6" class="text-center text-muted py-4">
                             <i class="fas fa-clipboard me-2"></i>Nenhum item adicionado ainda.
                         </td>
                     </tr>`;
             } else {
                 data.items.forEach(item => {
                     const tr = document.createElement('tr');
+                    if (item.status === 'EM_PREPARO') tr.classList.add('table-warning');
                     tr.innerHTML = `
                         <td>${item.name}</td>
                         <td>${brl(item.valor_unitario)}</td>
                         <td>${item.quantidade}</td>
                         <td>${brl(item.valor_total)}</td>
+                        <td>${STATUS_BADGE[item.status] ?? item.status}</td>
                         <td class="text-center">
                             <button class="btn btn-sm btn-outline-danger" title="Remover"
                                 onclick="removerItem(${item.id})">
@@ -238,39 +257,49 @@
             }
 
             const total = data.total_geral || 0;
-            document.getElementById('res_total').textContent    = brl(total);
-            document.getElementById('modal_total').textContent  = brl(total);
+            document.getElementById('res_total').textContent   = brl(total);
+            document.getElementById('modal_total').textContent = brl(total);
+
+            const qtd    = data.qtd_em_preparo || 0;
+            const badge  = document.getElementById('badge_em_preparo');
+            const qtdEl  = document.getElementById('qtd_em_preparo');
+            qtdEl.textContent = qtd;
+            badge.style.display = qtd > 0 ? '' : 'none';
+
+            const aviso = document.getElementById('aviso_em_preparo');
+            if (aviso) aviso.style.display = qtd > 0 ? 'flex' : 'none';
         }
 
         document.getElementById('sel_produto').addEventListener('change', function () {
-            const id      = parseInt(this.value);
-            const msgEl   = document.getElementById('msg_estoque');
+            const id    = parseInt(this.value);
+            const msgEl = document.getElementById('msg_estoque');
 
             if (!id || !produtoData[id]) {
-                document.getElementById('inp_valor').value = '';
-                document.getElementById('inp_total').value = '';
+                document.getElementById('inp_valor').value    = '';
+                document.getElementById('inp_total').value    = '';
                 document.getElementById('inp_quantidade').value = '1';
                 msgEl.style.display = 'none';
                 return;
             }
 
             const { sale_price: preco, available_quantity: estoque } = produtoData[id];
-            document.getElementById('inp_valor').value    = brl(preco);
+            document.getElementById('inp_valor').value     = brl(preco);
             document.getElementById('inp_quantidade').value = '1';
-            document.getElementById('inp_total').value    = brl(preco);
-            document.getElementById('inp_quantidade').max = estoque;
-            msgEl.textContent    = `Estoque disponível: ${estoque}`;
-            msgEl.style.display  = 'block';
+            document.getElementById('inp_total').value     = brl(preco);
+            document.getElementById('inp_quantidade').max  = estoque;
+            msgEl.textContent   = `Estoque disponível: ${estoque}`;
+            msgEl.style.display = 'block';
         });
 
         document.getElementById('inp_quantidade').addEventListener('input', function () {
-            const id  = parseInt(document.getElementById('sel_produto').value);
+            const id = parseInt(document.getElementById('sel_produto').value);
             if (!id || !produtoData[id]) return;
             const qtd = parseFloat(this.value) || 0;
             document.getElementById('inp_total').value = brl(produtoData[id].sale_price * qtd);
         });
 
-        function adicionarItem() {
+ 
+        function adicionarItem(destino = 'instant') {
             const id  = parseInt(document.getElementById('sel_produto').value);
             const qtd = parseFloat(document.getElementById('inp_quantidade').value) || 0;
 
@@ -283,7 +312,8 @@
                 return;
             }
 
-            const btn = document.getElementById('btn_adicionar');
+            const btnId = destino === 'cozinha' ? 'btn_cozinha' : 'btn_instant';
+            const btn   = document.getElementById(btnId);
             btn.disabled = true;
             btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Adicionando…';
 
@@ -294,7 +324,7 @@
                     'X-CSRF-TOKEN': CSRF_TOKEN,
                     'Accept': 'application/json',
                 },
-                body: JSON.stringify({ produto_id: id, quantidade: qtd }),
+                body: JSON.stringify({ produto_id: id, quantidade: qtd, destino }),
             })
             .then(async res => {
                 const data = await res.json();
@@ -313,23 +343,24 @@
                 document.getElementById('inp_total').value      = '';
                 document.getElementById('msg_estoque').style.display = 'none';
 
-                const nome = document.getElementById('sel_produto').options[0]?.text ?? 'Produto';
-                toastr.success('Item adicionado à comanda!', 'Sucesso', { ...toastrOpts, timeOut: 2000 });
+                const msg = destino === 'cozinha'
+                    ? 'Item enviado para a cozinha!'
+                    : 'Item adicionado à comanda!';
+                toastr.success(msg, 'Sucesso', { ...toastrOpts, timeOut: 2000 });
             })
             .catch(err => toastr.error(err.message, 'Erro', toastrOpts))
             .finally(() => {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-plus me-1"></i> Adicionar à Comanda';
+                btn.innerHTML = destino === 'cozinha'
+                    ? '<i class="fas fa-fire-burner me-1"></i> Enviar para a Cozinha'
+                    : '<i class="fas fa-bolt me-1"></i> Adicionar (instantâneo)';
             });
         }
 
         function removerItem(itemId) {
             fetch(ROUTE_DEL(itemId), {
                 method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': CSRF_TOKEN,
-                    'Accept': 'application/json',
-                },
+                headers: { 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' },
             })
             .then(async res => {
                 const data = await res.json();
