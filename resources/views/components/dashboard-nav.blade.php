@@ -72,12 +72,16 @@
             </ul>
         </li>
 
+        @php $caixaNavStatus = \App\Models\Caixa::aberto(); @endphp
         <li class="nav-item">
             <a href="{{ route('caixas.index') }}"
                class="nav-link {{ request()->routeIs('caixas.*') ? 'active bg-purple-sidebar text-purple-active' : 'bg-white text-gray-sidebar' }} px-4 py-3 d-flex align-items-center group"
                style="{{ request()->routeIs('caixas.*') ? 'border-left: 4px solid #7212E7; color: #7212E7;' : '' }}">
                 <i class="fas fa-cash-register me-3 group-hover:text-[#7212E7]"></i>
-                <span class="group-hover:text-[#7212E7]">Caixas</span>
+                <span class="group-hover:text-[#7212E7] flex-grow-1">Caixa</span>
+                <span class="ms-1" style="width:8px; height:8px; border-radius:50%; display:inline-block;
+                      background:{{ $caixaNavStatus ? '#22c55e' : '#ef4444' }};"
+                      title="{{ $caixaNavStatus ? 'Aberto' : 'Fechado' }}"></span>
             </a>
         </li>
 

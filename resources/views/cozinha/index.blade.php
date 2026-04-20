@@ -130,7 +130,10 @@
             const ul = div.querySelector('.lista-itens');
             p.itens.forEach(item => {
                 const li = document.createElement('li');
-                li.innerHTML = `<span class="qtd">${item.quantidade}x</span> ${item.name}`;
+                const obsHtml = item.observacao
+                    ? `<div class="item-obs"><i class="fas fa-comment-alt me-1"></i>${item.observacao}</div>`
+                    : '';
+                li.innerHTML = `<span class="qtd">${item.quantidade}x</span><div>${item.name}${obsHtml}</div>`;
                 ul.appendChild(li);
             });
 
@@ -282,6 +285,10 @@
         display:flex; align-items:center; gap:8px;
     }
     .lista-itens li:last-child { border-bottom:none; }
+    .item-obs {
+        font-size:.75rem; color:#b45309;
+        margin-top:2px;
+    }
     .qtd {
         background:#f1f5f9; color:#475569;
         border-radius:6px; padding:1px 7px;

@@ -6,7 +6,23 @@
     <x-layouts.breadcrumb title="Novo Pedido - Balcão" :breadcrumbs="[['name' => 'Vendas', 'route' => 'balcao'], ['name' => 'Novo Pedido - Balcão']]" />
 
 
-    <div class="container bg-white rounded mb-5" style="padding: 30px;">
+    @if (!$caixaAberto)
+        <div class="container mb-3">
+            <div class="alert d-flex align-items-center gap-3"
+                 style="background:#fef2f2; border:1.5px solid #fca5a5; border-radius:12px;">
+                <i class="fas fa-lock text-danger fs-4"></i>
+                <div class="flex-grow-1">
+                    <div class="fw-bold text-danger">Caixa fechado</div>
+                    <div class="text-muted small">Não é possível realizar pedidos sem um caixa aberto.</div>
+                </div>
+                <a href="{{ route('caixas.abrir.form') }}" class="btn btn-sm btn-danger">
+                    <i class="fas fa-lock-open me-1"></i> Abrir Caixa
+                </a>
+            </div>
+        </div>
+    @endif
+
+    <div class="container bg-white rounded mb-5" style="padding: 30px; {{ !$caixaAberto ? 'opacity:.55; pointer-events:none;' : '' }}">
 
         <h5 class="mb-4">Detalhes do Pedido</h5>
 
@@ -112,9 +128,14 @@
             </div>
 
             <div class="col-md-2">
-                <button type="button" class="btn btn-purple w-100" onclick="adicionarProduto()">
-                    <i class="fas fa-plus me-1"></i> Adicionar
-                </button>
+                <div class="d-grid gap-1">
+                    <button type="button" class="btn btn-purple btn-sm" onclick="adicionarProduto('instant')" title="Já entregue na hora">
+                        <i class="fas fa-bolt me-1"></i> Instantâneo
+                    </button>
+                    <button type="button" class="btn btn-outline-warning btn-sm text-dark" onclick="abrirModalCozinha()" title="Precisa ser preparado">
+                        <i class="fas fa-fire-burner me-1"></i> Cozinha
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -128,12 +149,13 @@
             <table class="table table-bordered table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th>Produto</th>
-                        <th style="width:140px">Valor Unit.</th>
-                        <th style="width:140px">Quantidade</th>
-                        <th style="width:140px">Valor Total</th>
-                        <th class="text-center" style="width:100px">Opções</th>
-                    </tr>
+                            <th>Produto</th>
+                            <th style="width:110px">Destino</th>
+                            <th style="width:120px">Valor Unit.</th>
+                            <th style="width:100px">Quantidade</th>
+                            <th style="width:120px">Valor Total</th>
+                            <th class="text-center" style="width:90px">Opções</th>
+                        </tr>
                 </thead>
                 <tbody id="tabela_itens">
                     <tr id="linha_vazia">
@@ -175,20 +197,13 @@
         </div>
 
         <div class="row mt-4">
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <a href="{{ route('balcao') }}" class="btn btn-outline-secondary w-100">
                     Cancelar
                 </a>
             </div>
-            <div class="col-md-3">
-                <button type="button" class="btn btn-outline-warning w-100"
-                    onclick="finalizarPedido('cozinha')"
-                    title="Registra o pedido e envia para a cozinha preparar. O pagamento fica para depois.">
-                    <i class="fas fa-fire-burner me-1"></i> Enviar para Cozinha
-                </button>
-            </div>
-            <div class="col-md-3">
-                <button type="button" class="btn btn-purple w-100" onclick="finalizarPedido('finalizar')">
+            <div class="col-md-4 offset-md-4">
+                <button type="button" class="btn btn-purple w-100" onclick="finalizarPedido()">
                     <i class="fas fa-check me-1"></i> Finalizar Pedido
                 </button>
             </div>
@@ -201,37 +216,34 @@
             <input type="hidden" name="forma_entrega" id="hidden_forma_entrega" value="balcao">
             <input type="hidden" name="endereco" id="hidden_endereco">
             <input type="hidden" name="bairro_id" id="hidden_bairro_id">
-            <input type="hidden" name="acao" id="hidden_acao" value="finalizar">
-            <input type="hidden" name="observacao" id="hidden_observacao">
         </form>
 
     </div>
 
-    <div class="modal fade" id="modalCozinha" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+    <div class="modal fade" id="modalObsCozinha" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content">
                 <div class="modal-header" style="background:#fffbeb; border-bottom-color:#fde68a;">
-                    <h5 class="modal-title" style="color:#92400e;">
-                        <i class="fas fa-fire-burner me-2"></i>Enviar para a Cozinha
-                    </h5>
+                    <h6 class="modal-title fw-semibold" style="color:#92400e;">
+                        <i class="fas fa-fire-burner me-2"></i>
+                        Enviar para a Cozinha
+                    </h6>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <p class="text-muted small mb-2">Itens que serão enviados:</p>
-                    <ul id="modal_cozinha_itens" class="list-group list-group-flush mb-3"></ul>
-
-                    <label class="form-label fw-semibold">
-                        <i class="fas fa-comment-alt me-1 text-warning"></i>
-                        Observação para a cozinha
+                    <p class="small text-muted mb-1" id="modal_obs_produto_nome"></p>
+                    <label class="form-label small fw-semibold">
+                        Observação
                         <span class="text-muted fw-normal">(opcional)</span>
                     </label>
-                    <textarea id="inp_observacao" class="form-control" rows="2"
-                        placeholder="Ex: sem cebola, bem passado, alergia a amendoim…"></textarea>
+                    <textarea id="modal_obs_cozinha" class="form-control form-control-sm" rows="2"
+                        placeholder="Ex: sem cebola, bem passado…"></textarea>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-warning text-dark fw-semibold" onclick="confirmarCozinha()">
-                        <i class="fas fa-fire-burner me-1"></i> Confirmar envio
+                <div class="modal-footer py-2">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-warning btn-sm text-dark fw-semibold"
+                            onclick="confirmarAdicionarCozinha()">
+                        <i class="fas fa-fire-burner me-1"></i> Confirmar
                     </button>
                 </div>
             </div>
@@ -334,7 +346,32 @@
             document.getElementById('inp_total').value = formatBRL(preco * qtd);
         });
 
-        function adicionarProduto() {
+        const DESTINO_BADGE = {
+            instant: '<span class="badge" style="background:#ede9fe;color:#6d28d9;font-size:.72rem;"><i class="fas fa-bolt me-1"></i>Instantâneo</span>',
+            cozinha: '<span class="badge" style="background:#fef3c7;color:#b45309;font-size:.72rem;"><i class="fas fa-fire-burner me-1"></i>Cozinha</span>',
+        };
+
+        function abrirModalCozinha() {
+            const id   = parseInt(document.getElementById('sel_produto').value);
+            const nome = document.getElementById('sel_produto').options[
+                document.getElementById('sel_produto').selectedIndex]?.text ?? '';
+            const qtd  = parseFloat(document.getElementById('inp_quantidade').value) || 0;
+
+            if (!id) { toastr.warning('Selecione um produto antes de adicionar.', 'Atenção', toastrOpts); return; }
+            if (qtd <= 0) { toastr.warning('Informe uma quantidade válida.', 'Atenção', toastrOpts); return; }
+
+            document.getElementById('modal_obs_produto_nome').textContent = `Produto: ${nome}  ×${qtd}`;
+            document.getElementById('modal_obs_cozinha').value = '';
+            new bootstrap.Modal(document.getElementById('modalObsCozinha')).show();
+        }
+
+        function confirmarAdicionarCozinha() {
+            const obs = document.getElementById('modal_obs_cozinha').value.trim();
+            bootstrap.Modal.getInstance(document.getElementById('modalObsCozinha')).hide();
+            adicionarProduto('cozinha', obs);
+        }
+
+        function adicionarProduto(destino = 'instant', observacao = '') {
             const sel = document.getElementById('sel_produto');
             const id = parseInt(sel.value);
             const nome = sel.options[sel.selectedIndex]?.text;
@@ -349,37 +386,27 @@
                 return;
             }
 
-            const {
-                sale_price: preco,
-                available_quantity: estoque
-            } = produtoData[id];
+            const { sale_price: preco, available_quantity: estoque } = produtoData[id];
 
-            const existente = itens.find(i => i.id === id);
-            const qtdJaAdicionada = existente ? existente.quantidade : 0;
+            // Para itens de cozinha, não agrupa com itens instantâneos do mesmo produto
+            const existente = itens.find(i => i.id === id && i.destino === destino);
+            const qtdJaAdicionada = itens.filter(i => i.id === id).reduce((s, i) => s + i.quantidade, 0);
 
             if (qtdJaAdicionada + qtd > estoque) {
-                toastr.error(`Quantidade total excede o estoque disponível (${estoque}).`, 'Estoque insuficiente',
-                    toastrOpts);
+                toastr.error(`Quantidade total excede o estoque disponível (${estoque}).`, 'Estoque insuficiente', toastrOpts);
                 return;
             }
 
             if (existente) {
                 existente.quantidade += qtd;
                 existente.valor_total = existente.valor_unitario * existente.quantidade;
+                if (observacao) existente.observacao = observacao;
             } else {
-                itens.push({
-                    id,
-                    name: nome,
-                    valor_unitario: preco,
-                    quantidade: qtd,
-                    valor_total: preco * qtd,
-                });
+                itens.push({ id, name: nome, valor_unitario: preco, quantidade: qtd, valor_total: preco * qtd, destino, observacao });
             }
 
-            toastr.success(`"${nome}" adicionado ao pedido.`, 'Produto adicionado', {
-                ...toastrOpts,
-                timeOut: 2500
-            });
+            const label = destino === 'cozinha' ? 'enviado para a cozinha' : 'adicionado ao pedido';
+            toastr.success(`"${nome}" ${label}.`, 'Produto adicionado', { ...toastrOpts, timeOut: 2500 });
 
             sel.value = '';
             document.getElementById('inp_valor').value = '';
@@ -398,7 +425,7 @@
             if (itens.length === 0) {
                 tbody.innerHTML = `
                     <tr id="linha_vazia">
-                        <td colspan="5" class="text-center text-muted py-4">
+                        <td colspan="6" class="text-center text-muted py-4">
                             <i class="fas fa-shopping-cart me-2"></i>Nenhum produto adicionado ainda.
                         </td>
                     </tr>`;
@@ -407,8 +434,13 @@
 
             itens.forEach((item, idx) => {
                 const tr = document.createElement('tr');
+                if (item.destino === 'cozinha') tr.classList.add('table-warning');
+                const obsHtml = item.observacao
+                    ? `<div class="text-muted" style="font-size:.75rem;"><i class="fas fa-comment-alt me-1"></i>${item.observacao}</div>`
+                    : '';
                 tr.innerHTML = `
-                    <td>${item.name}</td>
+                    <td>${item.name}${obsHtml}</td>
+                    <td>${DESTINO_BADGE[item.destino] ?? ''}</td>
                     <td>${formatBRL(item.valor_unitario)}</td>
                     <td>${item.quantidade}</td>
                     <td>${formatBRL(item.valor_total)}</td>
@@ -482,51 +514,15 @@
 
         const brl = (v) => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-        function confirmarCozinha() {
-            const obs = document.getElementById('inp_observacao').value.trim();
-            document.getElementById('hidden_observacao').value = obs;
-            document.getElementById('hidden_acao').value       = 'cozinha';
-            document.getElementById('hidden_forma_pagamento').value = '';
-
-            bootstrap.Modal.getInstance(document.getElementById('modalCozinha')).hide();
-
-            if (isDelivery) {
-                const endereco = document.getElementById('inp_endereco').value.trim();
-                const bairroId = document.getElementById('sel_bairro').value;
-                if (!endereco) { toastr.warning('Informe o endereço de entrega.', 'Atenção', toastrOpts); return; }
-                if (!bairroId) { toastr.warning('Selecione o bairro de entrega.', 'Atenção', toastrOpts); return; }
-                document.getElementById('hidden_endereco').value = endereco;
-            }
-
-            const payload = itens.map(i => ({ id: i.id, quantidade: i.quantidade }));
-            document.getElementById('hidden_produtos').value = JSON.stringify(payload);
-            document.getElementById('form_finalizar').submit();
-        }
-
-        function finalizarPedido(acao = 'finalizar') {
+        function finalizarPedido() {
             if (itens.length === 0) {
                 toastr.warning('Adicione ao menos um produto ao pedido.', 'Pedido vazio', toastrOpts);
                 return;
             }
 
-            // Envio para cozinha: abre modal de confirmação com observação
-            if (acao === 'cozinha') {
-                const ul = document.getElementById('modal_cozinha_itens');
-                ul.innerHTML = '';
-                itens.forEach(i => {
-                    const li = document.createElement('li');
-                    li.className = 'list-group-item d-flex justify-content-between py-1 px-0';
-                    li.innerHTML = `<span>${i.name}</span><span class="text-muted">${i.quantidade}x ${brl(i.valor_unitario)}</span>`;
-                    ul.appendChild(li);
-                });
-                document.getElementById('inp_observacao').value = '';
-                new bootstrap.Modal(document.getElementById('modalCozinha')).show();
-                return;
-            }
-
-            // Pagamento só é obrigatório na finalização direta
+            // Pagamento sempre obrigatório
             const fpSelecionado = document.querySelector('input[name="forma_pagamento_ui"]:checked');
-            if (acao === 'finalizar' && !fpSelecionado) {
+            if (!fpSelecionado) {
                 document.getElementById('fp_erro').style.display = 'block';
                 toastr.warning('Selecione a forma de pagamento.', 'Atenção', toastrOpts);
                 document.getElementById('forma_pagamento_group').scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -537,7 +533,6 @@
             if (isDelivery) {
                 const endereco = document.getElementById('inp_endereco').value.trim();
                 const bairroId = document.getElementById('sel_bairro').value;
-
                 if (!endereco) {
                     toastr.warning('Informe o endereço de entrega.', 'Atenção', toastrOpts);
                     document.getElementById('inp_endereco').focus();
@@ -548,15 +543,13 @@
                     document.getElementById('sel_bairro').focus();
                     return;
                 }
-
                 document.getElementById('hidden_endereco').value = endereco;
             }
 
-            const payload = itens.map(i => ({ id: i.id, quantidade: i.quantidade }));
+            const payload = itens.map(i => ({ id: i.id, quantidade: i.quantidade, destino: i.destino, observacao: i.observacao || null }));
 
             document.getElementById('hidden_produtos').value        = JSON.stringify(payload);
-            document.getElementById('hidden_forma_pagamento').value = fpSelecionado ? fpSelecionado.value : '';
-            document.getElementById('hidden_acao').value            = acao;
+            document.getElementById('hidden_forma_pagamento').value = fpSelecionado.value;
             document.getElementById('form_finalizar').submit();
         }
 

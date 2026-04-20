@@ -8,6 +8,24 @@
         :breadcrumbs="[['name' => 'Mesas']]"
     />
 
+    @php $caixaMesas = \App\Models\Caixa::aberto(); @endphp
+
+    @if (!$caixaMesas)
+        <div class="container mb-3">
+            <div class="alert d-flex align-items-center gap-3"
+                 style="background:#fef2f2; border:1.5px solid #fca5a5; border-radius:12px;">
+                <i class="fas fa-lock text-danger fs-4"></i>
+                <div class="flex-grow-1">
+                    <div class="fw-bold text-danger">Caixa fechado</div>
+                    <div class="text-muted small">Mesas não podem ser abertas sem um caixa aberto.</div>
+                </div>
+                <a href="{{ route('caixas.abrir.form') }}" class="btn btn-sm btn-danger">
+                    <i class="fas fa-lock-open me-1"></i> Abrir Caixa
+                </a>
+            </div>
+        </div>
+    @endif
+
     <div class="container ">
 
         <div class="d-flex align-items-center gap-4 mb-4">

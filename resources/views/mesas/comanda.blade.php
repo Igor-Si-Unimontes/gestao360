@@ -77,7 +77,7 @@
                         <button type="button" class="btn btn-purple" id="btn_instant" onclick="adicionarItem('instant')">
                             <i class="fas fa-bolt me-1"></i> Adicionar (instantâneo)
                         </button>
-                        <button type="button" class="btn btn-outline-warning text-dark" id="btn_cozinha" onclick="adicionarItem('cozinha')">
+                        <button type="button" class="btn btn-outline-warning text-dark" id="btn_cozinha" onclick="abrirModalObsMesa()">
                             <i class="fas fa-fire-burner me-1"></i> Enviar para a Cozinha
                         </button>
                     </div>
@@ -116,6 +116,34 @@
         </div>
     </div>
 
+    <div class="modal fade" id="modalObsMesa" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <div class="modal-header" style="background:#fffbeb; border-bottom-color:#fde68a;">
+                    <h6 class="modal-title fw-semibold" style="color:#92400e;">
+                        <i class="fas fa-fire-burner me-2"></i>Enviar para a Cozinha
+                    </h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="small text-muted mb-1" id="mesa_obs_produto_nome"></p>
+                    <label class="form-label small fw-semibold">
+                        Observação <span class="text-muted fw-normal">(opcional)</span>
+                    </label>
+                    <textarea id="mesa_obs_cozinha" class="form-control form-control-sm" rows="2"
+                        placeholder="Ex: sem cebola, bem passado…"></textarea>
+                </div>
+                <div class="modal-footer py-2">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-warning btn-sm text-dark fw-semibold"
+                            onclick="confirmarAdicionarCozinhaMesa()">
+                        <i class="fas fa-fire-burner me-1"></i> Confirmar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="modalFecharMesa" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -129,10 +157,6 @@
                 <form action="{{ route('mesas.fechar', $mesa) }}" method="POST">
                     @csrf
                     <div class="modal-body">
-                        <div id="aviso_em_preparo" class="alert alert-warning d-flex align-items-center gap-2 mb-3" style="display:none!important;">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <span>Há itens ainda em preparo na cozinha. Tem certeza que deseja fechar?</span>
-                        </div>
                         <div class="alert alert-light border text-center mb-3">
                             <div class="text-muted small">Total a pagar</div>
                             <div id="modal_total" class="fw-bold fs-4" style="color:#7212E7;">R$ 0,00</div>
@@ -240,8 +264,11 @@
                 data.items.forEach(item => {
                     const tr = document.createElement('tr');
                     if (item.status === 'EM_PREPARO') tr.classList.add('table-warning');
+                    const obsHtml = item.observacao
+                        ? `<div class="text-muted" style="font-size:.75rem;"><i class="fas fa-comment-alt me-1"></i>${item.observacao}</div>`
+                        : '';
                     tr.innerHTML = `
-                        <td>${item.name}</td>
+                        <td>${item.name}${obsHtml}</td>
                         <td>${brl(item.valor_unitario)}</td>
                         <td>${item.quantidade}</td>
                         <td>${brl(item.valor_total)}</td>
@@ -266,8 +293,6 @@
             qtdEl.textContent = qtd;
             badge.style.display = qtd > 0 ? '' : 'none';
 
-            const aviso = document.getElementById('aviso_em_preparo');
-            if (aviso) aviso.style.display = qtd > 0 ? 'flex' : 'none';
         }
 
         document.getElementById('sel_produto').addEventListener('change', function () {
@@ -299,7 +324,27 @@
         });
 
  
-        function adicionarItem(destino = 'instant') {
+        function abrirModalObsMesa() {
+            const id   = parseInt(document.getElementById('sel_produto').value);
+            const nome = document.getElementById('sel_produto').options[
+                document.getElementById('sel_produto').selectedIndex]?.text ?? '';
+            const qtd  = parseFloat(document.getElementById('inp_quantidade').value) || 0;
+
+            if (!id)    { toastr.warning('Selecione um produto.', 'Atenção', toastrOpts); return; }
+            if (qtd<=0) { toastr.warning('Informe uma quantidade válida.', 'Atenção', toastrOpts); return; }
+
+            document.getElementById('mesa_obs_produto_nome').textContent = `${nome}  ×${qtd}`;
+            document.getElementById('mesa_obs_cozinha').value = '';
+            new bootstrap.Modal(document.getElementById('modalObsMesa')).show();
+        }
+
+        function confirmarAdicionarCozinhaMesa() {
+            const obs = document.getElementById('mesa_obs_cozinha').value.trim();
+            bootstrap.Modal.getInstance(document.getElementById('modalObsMesa')).hide();
+            adicionarItem('cozinha', obs);
+        }
+
+        function adicionarItem(destino = 'instant', observacao = '') {
             const id  = parseInt(document.getElementById('sel_produto').value);
             const qtd = parseFloat(document.getElementById('inp_quantidade').value) || 0;
 
@@ -324,7 +369,7 @@
                     'X-CSRF-TOKEN': CSRF_TOKEN,
                     'Accept': 'application/json',
                 },
-                body: JSON.stringify({ produto_id: id, quantidade: qtd, destino }),
+                body: JSON.stringify({ produto_id: id, quantidade: qtd, destino, observacao: observacao || null }),
             })
             .then(async res => {
                 const data = await res.json();
@@ -374,14 +419,27 @@
             .catch(err => toastr.error(err.message, 'Erro', toastrOpts));
         }
 
+        const ROUTE_ITENS = '{{ route('mesas.itens.json', $mesa) }}';
+
         function abrirFecharMesa() {
-            if (!comanda.items || comanda.items.length === 0) {
-                toastr.warning('Adicione ao menos um produto antes de fechar a mesa.', 'Atenção', toastrOpts);
-                return;
-            }
-            document.getElementById('fp_modal_erro').style.display = 'none';
-            document.querySelectorAll('input[name="forma_pagamento"]').forEach(r => r.checked = false);
-            new bootstrap.Modal(document.getElementById('modalFecharMesa')).show();
+            fetch(ROUTE_ITENS, { headers: { 'Accept': 'application/json' } })
+                .then(r => r.json())
+                .then(data => {
+                    renderComanda(data); 
+
+                    if (!data.items || data.items.length === 0) {
+                        toastr.warning('Adicione ao menos um produto antes de fechar a mesa.', 'Atenção', toastrOpts);
+                        return;
+                    }
+                    document.getElementById('fp_modal_erro').style.display = 'none';
+                    document.querySelectorAll('input[name="forma_pagamento"]').forEach(r => r.checked = false);
+                    new bootstrap.Modal(document.getElementById('modalFecharMesa')).show();
+                })
+                .catch(() => {
+                    document.getElementById('fp_modal_erro').style.display = 'none';
+                    document.querySelectorAll('input[name="forma_pagamento"]').forEach(r => r.checked = false);
+                    new bootstrap.Modal(document.getElementById('modalFecharMesa')).show();
+                });
         }
 
         function validarFechamento() {

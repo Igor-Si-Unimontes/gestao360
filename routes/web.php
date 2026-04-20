@@ -71,8 +71,10 @@ Route::middleware('auth')->group(function () {
     Route::put('/fiscais/{fiscal}', [FiscalController::class, 'update'])->name('fiscais.update');  
     
     Route::get('/caixas', [CaixaController::class, 'index'])->name('caixas.index');
-    Route::post('/caixas/abrir', [CaixaController::class, 'abrirCaixa'])->name('caixas.abrir');
-    Route::post('/caixas/fechar', [CaixaController::class, 'fecharCaixa'])->name('caixas.fechar');
+    Route::get('/caixas/abrir', [CaixaController::class, 'abrirForm'])->name('caixas.abrir.form');
+    Route::post('/caixas/abrir', [CaixaController::class, 'abrir'])->name('caixas.abrir');
+    Route::get('/caixas/fechar', [CaixaController::class, 'fecharForm'])->name('caixas.fechar.form');
+    Route::post('/caixas/fechar', [CaixaController::class, 'fechar'])->name('caixas.fechar');
     
     //pedidos
     Route::get('/balcao', [BalcaoController::class, 'index'])->name('balcao');
@@ -93,6 +95,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/mesas', [MesaController::class, 'index'])->name('mesas.index');
     Route::post('/mesas/{mesa}/abrir', [MesaController::class, 'abrirMesa'])->name('mesas.abrir');
     Route::get('/mesas/{mesa}/comanda', [MesaController::class, 'comanda'])->name('mesas.comanda');
+    Route::get('/mesas/{mesa}/itens', [MesaController::class, 'itensJson'])->name('mesas.itens.json');
     Route::post('/mesas/{mesa}/item', [MesaController::class, 'adicionarItem'])->name('mesas.item.add');
     Route::delete('/mesas/{mesa}/item/{item}', [MesaController::class, 'removerItem'])->name('mesas.item.remove');
     Route::post('/mesas/{mesa}/fechar', [MesaController::class, 'fecharMesa'])->name('mesas.fechar');
