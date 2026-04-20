@@ -27,6 +27,11 @@ class User extends Authenticable
         'token'
     ];
 
+    public function getNameAttribute(): string
+    {
+        return trim("{$this->first_name} {$this->last_name}");
+    }
+
     public function employees()
     {
         return $this->hasOne(Employee::class);

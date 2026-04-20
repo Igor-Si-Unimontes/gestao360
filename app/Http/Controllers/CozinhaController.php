@@ -56,6 +56,7 @@ class CozinhaController extends Controller
                 $venda->mesa?->update(['status' => 'livre']);
             }
 
+            $venda->itens()->where('status', 'EM_PREPARO')->update(['status' => 'ENTREGUE']);
             $venda->update(['status' => 'FINALIZADA']);
             DB::commit();
         } catch (\Exception $e) {
@@ -70,11 +71,19 @@ class CozinhaController extends Controller
     {
         $resultado = collect();
 
-        Venda::with(['itens.produto', 'mesa'])
+        // 1. Pedidos balcão/delivery EM_PREPARO
+        //    Card mostra APENAS os itens marcados como cozinha (EM_PREPARO)
+        //    Os instantâneos (ENTREGUE) já foram servidos e não aparecem
+        Venda::with([
+                'mesa',
+                'itens' => fn($q) => $q->with('produto')->where('status', 'EM_PREPARO'),
+            ])
             ->where('status', 'EM_PREPARO')
             ->oldest()
             ->get()
             ->each(function (Venda $v) use (&$resultado) {
+                if ($v->itens->isEmpty()) return; // nenhum item de cozinha restante
+
                 $minutos = (int) $v->created_at->diffInMinutes(now());
                 [$alerta, $cor, $label] = $this->alertaInfo($minutos);
 
@@ -82,7 +91,7 @@ class CozinhaController extends Controller
                     'id'          => $v->id,
                     'tipo'        => $v->tipo,
                     'mesa'        => $v->mesa?->numero,
-                    'card_type'   => 'venda',          
+                    'card_type'   => 'venda',
                     'observacao'  => $v->observacao,
                     'minutos'     => $minutos,
                     'alerta'      => $alerta,
@@ -92,6 +101,7 @@ class CozinhaController extends Controller
                     'itens'       => $v->itens->map(fn($i) => [
                         'name'       => $i->produto?->name ?? '—',
                         'quantidade' => $i->quantidade,
+                        'observacao' => $i->observacao,
                     ])->values(),
                 ]);
             });
@@ -123,6 +133,7 @@ class CozinhaController extends Controller
                     'itens'       => $v->itens->map(fn($i) => [
                         'name'       => $i->produto?->name ?? '—',
                         'quantidade' => $i->quantidade,
+                        'observacao' => $i->observacao,
                     ])->values(),
                 ]);
             });

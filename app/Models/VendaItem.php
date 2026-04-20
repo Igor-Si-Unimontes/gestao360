@@ -15,6 +15,7 @@ class VendaItem extends Model
         'valor_unitario',
         'valor_total',
         'status',
+        'observacao',
     ];
 
     public function venda()

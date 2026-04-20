@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Caixa;
 use App\Models\Mesa;
 use App\Models\Product;
 use App\Models\Venda;
@@ -71,6 +72,7 @@ class MesaController extends Controller
             'quantidade'     => (float) $i->quantidade,
             'valor_total'    => (float) $i->valor_total,
             'status'         => $i->status,
+            'observacao'     => $i->observacao,
         ])->values()->toArray();
 
         $emPreparo = array_filter($itens, fn($i) => $i['status'] === 'EM_PREPARO');
@@ -122,6 +124,12 @@ class MesaController extends Controller
                 ->with('error', "Mesa #{$mesa->numero} já está ocupada.");
         }
 
+        $caixa = Caixa::aberto();
+        if (!$caixa) {
+            return redirect()->route('caixas.index')
+                ->with('error', 'Nenhum caixa aberto. Abra o caixa antes de abrir mesas.');
+        }
+
         DB::beginTransaction();
         try {
             Venda::create([
@@ -129,6 +137,7 @@ class MesaController extends Controller
                 'status'      => 'ABERTA',
                 'usuario_id'  => auth()->id(),
                 'mesa_id'     => $mesa->id,
+                'caixa_id'    => $caixa->id,
                 'valor_total' => 0,
             ]);
 
@@ -143,6 +152,15 @@ class MesaController extends Controller
             ->with('success', "Mesa #{$mesa->numero} aberta!");
     }
 
+    public function itensJson(Mesa $mesa)
+    {
+        $venda = $mesa->vendaAberta;
+        if (!$venda) {
+            return response()->json(['items' => [], 'total_geral' => 0, 'tem_em_preparo' => false, 'qtd_em_preparo' => 0]);
+        }
+        return response()->json($this->buildItensData($venda->fresh()));
+    }
+
     public function adicionarItem(Request $request, Mesa $mesa)
     {
         $venda = $mesa->vendaAberta;
@@ -153,6 +171,7 @@ class MesaController extends Controller
         $product    = Product::find($request->produto_id);
         $quantidade = (float) $request->quantidade;
         $destino    = $request->input('destino', 'instant');
+        $observacao = trim($request->input('observacao', '')) ?: null;
 
         if (!$product) {
             return response()->json(['error' => 'Produto não encontrado.'], 404);
@@ -180,6 +199,7 @@ class MesaController extends Controller
                 'valor_unitario' => $valorUnitario,
                 'valor_total'    => $valorUnitario * $quantidade,
                 'status'         => $itemStatus,
+                'observacao'     => $observacao,
             ]);
 
             $venda->update(['valor_total' => $venda->itens()->sum('valor_total')]);

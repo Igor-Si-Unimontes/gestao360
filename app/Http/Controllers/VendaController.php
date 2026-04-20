@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bairros;
+use App\Models\Caixa;
 use App\Models\Product;
 use App\Models\Venda;
 use App\Models\VendaItem;
@@ -21,9 +22,8 @@ class VendaController extends Controller
 
         $formaPagamento = $request->input('forma_pagamento');
         $formasValidas   = ['DINHEIRO', 'PIX', 'CARTAO_DEBITO', 'CARTAO_CREDITO'];
-        $enviandoCozinha = $request->input('acao') === 'cozinha';
 
-        if (!$enviandoCozinha && !in_array($formaPagamento, $formasValidas)) {
+        if (!in_array($formaPagamento, $formasValidas)) {
             return redirect()->back()->with('error', 'Selecione uma forma de pagamento válida.');
         }
 
@@ -48,7 +48,14 @@ class VendaController extends Controller
             $taxaEntrega = (float) $bairro->taxa;
         }
 
-        $statusInicial = $request->input('acao') === 'cozinha' ? 'EM_PREPARO' : 'FINALIZADA';
+        $caixa = Caixa::aberto();
+        if (!$caixa) {
+            return redirect()->route('caixas.index')
+                ->with('error', 'Nenhum caixa aberto. Abra o caixa antes de realizar pedidos.');
+        }
+
+        $temCozinha    = collect($produtos)->contains(fn($p) => ($p['destino'] ?? 'instant') === 'cozinha');
+        $statusInicial = $temCozinha ? 'EM_PREPARO' : 'FINALIZADA';
 
         DB::beginTransaction();
 
@@ -56,8 +63,9 @@ class VendaController extends Controller
             $venda = Venda::create([
                 'tipo'            => $isDelivery ? 'DELIVERY' : 'RAPIDA',
                 'status'          => $statusInicial,
-                'forma_pagamento' => $statusInicial === 'FINALIZADA' ? $formaPagamento : null,
+                'forma_pagamento' => $formaPagamento,   
                 'usuario_id'      => auth()->id(),
+                'caixa_id'        => $caixa->id,
                 'valor_total'     => 0,
                 'endereco'        => $endereco,
                 'bairro_id'       => $bairroId,
@@ -110,12 +118,16 @@ class VendaController extends Controller
                     $restante -= $deduzir;
                 }
 
+                $itemStatus = ($item['destino'] ?? 'instant') === 'cozinha' ? 'EM_PREPARO' : 'ENTREGUE';
+
                 VendaItem::create([
-                    'venda_id'      => $venda->id,
-                    'produto_id'    => $product->id,
-                    'quantidade'    => $quantidadeNecessaria,
+                    'venda_id'       => $venda->id,
+                    'produto_id'     => $product->id,
+                    'quantidade'     => $quantidadeNecessaria,
                     'valor_unitario' => $valorUnitario,
-                    'valor_total'   => $subtotal,
+                    'valor_total'    => $subtotal,
+                    'status'         => $itemStatus,
+                    'observacao'     => trim($item['observacao'] ?? '') ?: null,
                 ]);
 
                 $valorTotal += $subtotal;
@@ -125,8 +137,8 @@ class VendaController extends Controller
 
             DB::commit();
 
-            $msg = $statusInicial === 'EM_PREPARO'
-                ? 'Pedido enviado para a cozinha!'
+            $msg = $temCozinha
+                ? 'Pedido registrado! Itens da cozinha em preparo.'
                 : 'Venda finalizada com sucesso!';
 
             return redirect()->route('balcao')->with('success', $msg);

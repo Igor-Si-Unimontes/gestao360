@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bairros;
+use App\Models\Caixa;
 use App\Models\Product;
 use App\Models\VendaItem;
 use Illuminate\Http\Request;
@@ -39,8 +40,9 @@ class BalcaoController extends Controller
 
         $produtos = $produtos->filter(fn($p) => isset($produtoData[$p->id]));
 
-        $bairros = Bairros::orderBy('nome')->get();
+        $bairros     = Bairros::orderBy('nome')->get();
+        $caixaAberto = Caixa::aberto();
 
-        return view('pedidos.balcao', compact('produtos', 'produtoData', 'bairros'));
+        return view('pedidos.balcao', compact('produtos', 'produtoData', 'bairros', 'caixaAberto'));
     }
 }
