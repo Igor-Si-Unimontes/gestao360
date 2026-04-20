@@ -11,7 +11,7 @@
         ]"
     />
 
-    <div class="container" style="max-width:680px;">
+    <div class="container">
 
         <div class="d-flex align-items-center gap-3 mb-4 p-3 rounded"
              style="background:#f8f5ff; border:1px solid #ddd6fe;">

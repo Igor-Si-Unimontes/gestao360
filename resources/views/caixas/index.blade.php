@@ -18,7 +18,7 @@
         @endif
     </x-layouts.breadcrumb>
 
-    <div class="container-fluid px-4 pb-5">
+    <div class="container pb-5">
 
         @if ($caixaAberto)
             @php
@@ -149,9 +149,7 @@
                     <div class="fw-bold" style="color:#991b1b;">Nenhum caixa aberto</div>
                     <div class="text-muted small">Pedidos não podem ser realizados sem um caixa aberto.</div>
                 </div>
-                <a href="{{ route('caixas.abrir.form') }}" class="btn btn-purple btn-sm text-white">
-                    <i class="fas fa-lock-open me-1"></i> Abrir Caixa
-                </a>
+                
             </div>
         @endif
 
