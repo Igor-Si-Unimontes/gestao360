@@ -59,6 +59,16 @@ class Caixa extends Model
         return $this->hasMany(Venda::class, 'caixa_id');
     }
 
+    public function sangrias()
+    {
+        return $this->hasMany(Sangria::class, 'caixa_id');
+    }
+
+    public function totalSangrias(): float
+    {
+        return (float) $this->sangrias()->sum('valor');
+    }
+
     public static function aberto(): ?self
     {
         return self::where('status', 'ABERTO')->latest()->first();
@@ -90,7 +100,7 @@ class Caixa extends Model
 
     public function valorEsperadoFechamento(): float
     {
-        return round((float) $this->valor_abertura + $this->totalDinheiro(), 2);
+        return round((float) $this->valor_abertura + $this->totalDinheiro() - $this->totalSangrias(), 2);
     }
 
     public function tempoAberto(): string

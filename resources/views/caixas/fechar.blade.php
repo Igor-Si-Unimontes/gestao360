@@ -34,18 +34,25 @@
             </div>
         </div>
 
+        @php $totalSangrias = $caixa->totalSangrias(); @endphp
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-body">
                 <div class="row g-3 text-center">
-                    <div class="col-4">
+                    <div class="col-3">
                         <div class="text-muted small">Abertura</div>
                         <div class="fw-semibold">R$ {{ number_format($caixa->valor_abertura, 2, ',', '.') }}</div>
                     </div>
-                    <div class="col-4">
+                    <div class="col-3">
                         <div class="text-muted small">+ Vendas em Dinheiro</div>
                         <div class="fw-semibold text-success">+ R$ {{ number_format($caixa->totalDinheiro(), 2, ',', '.') }}</div>
                     </div>
-                    <div class="col-4">
+                    <div class="col-3">
+                        <div class="text-muted small">− Sangrias</div>
+                        <div class="fw-semibold text-danger">
+                            {{ $totalSangrias > 0 ? '- R$ ' . number_format($totalSangrias, 2, ',', '.') : 'R$ 0,00' }}
+                        </div>
+                    </div>
+                    <div class="col-3">
                         <div class="text-muted small">= Espécie esperada</div>
                         <div class="fw-bold" style="color:#7212E7;">
                             R$ {{ number_format($esperado, 2, ',', '.') }}

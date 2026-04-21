@@ -107,6 +107,7 @@
                 </div>
             </div>
 
+            @php $totalSangriasAberto = $caixaAberto->totalSangrias(); @endphp
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body">
                     <h6 class="fw-semibold mb-3">
@@ -114,19 +115,27 @@
                         Projeção de Fechamento
                     </h6>
                     <div class="row g-3">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="bg-light rounded p-3 text-center">
                                 <div class="text-muted small">Abertura (espécie)</div>
                                 <div class="fw-semibold">R$ {{ number_format($caixaAberto->valor_abertura, 2, ',', '.') }}</div>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="bg-light rounded p-3 text-center">
                                 <div class="text-muted small">+ Vendas em Dinheiro</div>
                                 <div class="fw-semibold text-success">+ R$ {{ number_format($dinheiro, 2, ',', '.') }}</div>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
+                            <div class="bg-light rounded p-3 text-center">
+                                <div class="text-muted small">− Sangrias</div>
+                                <div class="fw-semibold text-danger">
+                                    {{ $totalSangriasAberto > 0 ? '- R$ ' . number_format($totalSangriasAberto, 2, ',', '.') : 'R$ 0,00' }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
                             <div class="p-3 text-center rounded" style="background:#ede9fe;">
                                 <div class="text-muted small">= Espécie esperada no caixa</div>
                                 <div class="fw-bold fs-5" style="color:#7212E7;">
@@ -135,6 +144,14 @@
                             </div>
                         </div>
                     </div>
+                    @if ($totalSangriasAberto > 0)
+                        <div class="mt-2 text-end">
+                            <a href="{{ route('sangrias.index') }}" class="small" style="color:#7212E7;">
+                                <i class="fas fa-hand-holding-usd me-1"></i>
+                                Ver {{ $caixaAberto->sangrias()->count() }} sangria(s) registrada(s)
+                            </a>
+                        </div>
+                    @endif
                 </div>
             </div>
 
@@ -215,7 +232,7 @@
                                         <td>
                                             @if ($cx->status === 'FECHADO' && $cx->valor_fechamento !== null)
                                                 @php
-                                                    $esperadoHist = round((float)$cx->valor_abertura + $cx->vendas()->where('status','FINALIZADA')->where('forma_pagamento','DINHEIRO')->sum('valor_total'), 2);
+                                                    $esperadoHist = $cx->valorEsperadoFechamento();
                                                     $difHist = round((float)$cx->valor_fechamento - $esperadoHist, 2);
                                                 @endphp
                                                 @if ($difHist == 0)
@@ -234,6 +251,11 @@
                             </tbody>
                         </table>
                     </div>
+                    @if ($historico->hasPages())
+                        <div class="px-3 py-3 border-top bg-white d-flex justify-content-end">
+                            {{ $historico->links() }}
+                        </div>
+                    @endif
                 @endif
             </div>
         </div>

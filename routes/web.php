@@ -9,6 +9,7 @@ use App\Http\Controllers\MesaController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\VendaController;
 use App\Http\Controllers\CaixaController;
+use App\Http\Controllers\SangriaController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\UserController;
 use Illuminate\Routing\Router;
@@ -75,6 +76,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/caixas/abrir', [CaixaController::class, 'abrir'])->name('caixas.abrir');
     Route::get('/caixas/fechar', [CaixaController::class, 'fecharForm'])->name('caixas.fechar.form');
     Route::post('/caixas/fechar', [CaixaController::class, 'fechar'])->name('caixas.fechar');
+
+    Route::get('/sangrias', [SangriaController::class, 'index'])->name('sangrias.index');
+    Route::get('/sangrias/create', [SangriaController::class, 'create'])->name('sangrias.create');
+    Route::post('/sangrias', [SangriaController::class, 'store'])->name('sangrias.store');
+    Route::get('/sangrias/{sangria}/edit', [SangriaController::class, 'edit'])->name('sangrias.edit');
+    Route::patch('/sangrias/{sangria}', [SangriaController::class, 'update'])->name('sangrias.update');
+    Route::delete('/sangrias/{sangria}', [SangriaController::class, 'destroy'])->name('sangrias.destroy');
     
     //pedidos
     Route::get('/balcao', [BalcaoController::class, 'index'])->name('balcao');

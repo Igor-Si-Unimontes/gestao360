@@ -86,6 +86,15 @@
         </li>
 
         <li class="nav-item">
+            <a href="{{ route('sangrias.index') }}"
+               class="nav-link {{ request()->routeIs('sangrias.*') ? 'active bg-purple-sidebar text-purple-active' : 'bg-white text-gray-sidebar' }} px-4 py-3 d-flex align-items-center group"
+               style="{{ request()->routeIs('sangrias.*') ? 'border-left: 4px solid #7212E7; color: #7212E7;' : '' }}">
+                <i class="fas fa-hand-holding-usd me-3" style="{{ request()->routeIs('sangrias.*') ? 'color:#7212E7;' : '' }}"></i>
+                <span>Sangrias</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
             <a href="{{ route('balcao') }}"
                class="nav-link {{ request()->routeIs('balcao') ? 'active bg-purple-sidebar text-purple-active' : 'bg-white text-gray-sidebar' }} px-4 py-3 d-flex align-items-center group"
                style="{{ request()->routeIs('balcao') ? 'border-left: 4px solid #7212E7; color: #7212E7;' : '' }}">

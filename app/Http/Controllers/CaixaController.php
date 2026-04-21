@@ -11,7 +11,7 @@ class CaixaController extends Controller
     public function index()
     {
         $caixaAberto  = Caixa::with('usuario')->where('status', 'ABERTO')->latest()->first();
-        $historico    = Caixa::with('usuario')->latest()->take(10)->get();
+        $historico    = Caixa::with('usuario')->latest()->paginate(10);
 
         return view('caixas.index', compact('caixaAberto', 'historico'));
     }
