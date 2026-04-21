@@ -7,6 +7,7 @@ use App\Http\Controllers\CozinhaController;
 use App\Http\Controllers\BatchController;
 use App\Http\Controllers\MesaController;
 use App\Http\Controllers\PedidoController;
+use App\Http\Controllers\OcorrenciaController;
 use App\Http\Controllers\PontoController;
 use App\Http\Controllers\VendaController;
 use App\Http\Controllers\CaixaController;
@@ -84,6 +85,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/sangrias/{sangria}/edit', [SangriaController::class, 'edit'])->name('sangrias.edit');
     Route::patch('/sangrias/{sangria}', [SangriaController::class, 'update'])->name('sangrias.update');
     Route::delete('/sangrias/{sangria}', [SangriaController::class, 'destroy'])->name('sangrias.destroy');
+
+    Route::get('/ocorrencias', [OcorrenciaController::class, 'index'])->name('ocorrencias.index');
+    Route::get('/ocorrencias/create', [OcorrenciaController::class, 'create'])->name('ocorrencias.create');
+    Route::post('/ocorrencias', [OcorrenciaController::class, 'store'])->name('ocorrencias.store');
+    Route::get('/ocorrencias/{ocorrencia}/edit', [OcorrenciaController::class, 'edit'])->name('ocorrencias.edit');
+    Route::patch('/ocorrencias/{ocorrencia}', [OcorrenciaController::class, 'update'])->name('ocorrencias.update');
+    Route::delete('/ocorrencias/{ocorrencia}', [OcorrenciaController::class, 'destroy'])->name('ocorrencias.destroy');
 
     Route::get('/pontos', [PontoController::class, 'index'])->name('pontos.index');
     Route::get('/pontos/registros', [PontoController::class, 'registros'])->name('pontos.registros');

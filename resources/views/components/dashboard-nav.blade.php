@@ -95,6 +95,15 @@
         </li>
 
         <li class="nav-item">
+            <a href="{{ route('ocorrencias.index') }}"
+               class="nav-link {{ request()->routeIs('ocorrencias.*') ? 'active bg-purple-sidebar text-purple-active' : 'bg-white text-gray-sidebar' }} px-4 py-3 d-flex align-items-center group"
+               style="{{ request()->routeIs('ocorrencias.*') ? 'border-left: 4px solid #7212E7; color: #7212E7;' : '' }}">
+                <i class="fas fa-triangle-exclamation me-3" style="{{ request()->routeIs('ocorrencias.*') ? 'color:#7212E7;' : '' }}"></i>
+                <span>Ocorrências</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
             <div class="nav-link px-4 py-3 d-flex justify-content-between align-items-center
                 {{ request()->routeIs('pontos.*')
                     ? 'active bg-purple-sidebar text-purple-active'
