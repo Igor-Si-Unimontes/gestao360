@@ -7,6 +7,7 @@ use App\Http\Controllers\CozinhaController;
 use App\Http\Controllers\BatchController;
 use App\Http\Controllers\MesaController;
 use App\Http\Controllers\PedidoController;
+use App\Http\Controllers\PontoController;
 use App\Http\Controllers\VendaController;
 use App\Http\Controllers\CaixaController;
 use App\Http\Controllers\SangriaController;
@@ -83,6 +84,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/sangrias/{sangria}/edit', [SangriaController::class, 'edit'])->name('sangrias.edit');
     Route::patch('/sangrias/{sangria}', [SangriaController::class, 'update'])->name('sangrias.update');
     Route::delete('/sangrias/{sangria}', [SangriaController::class, 'destroy'])->name('sangrias.destroy');
+
+    Route::get('/pontos', [PontoController::class, 'index'])->name('pontos.index');
+    Route::get('/pontos/registros', [PontoController::class, 'registros'])->name('pontos.registros');
+    Route::post('/pontos/abrir', [PontoController::class, 'abrir'])->name('pontos.abrir');
+    Route::post('/pontos/fechar', [PontoController::class, 'fechar'])->name('pontos.fechar');
     
     //pedidos
     Route::get('/balcao', [BalcaoController::class, 'index'])->name('balcao');

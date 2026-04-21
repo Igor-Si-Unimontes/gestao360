@@ -95,6 +95,46 @@
         </li>
 
         <li class="nav-item">
+            <div class="nav-link px-4 py-3 d-flex justify-content-between align-items-center
+                {{ request()->routeIs('pontos.*')
+                    ? 'active bg-purple-sidebar text-purple-active'
+                    : 'bg-white text-gray-sidebar' }}
+                group cursor-pointer"
+                onclick="toggleMenu('menuPontos')"
+                style="{{ request()->routeIs('pontos.*')
+                    ? 'border-left: 4px solid #7212E7; color: #7212E7;'
+                    : '' }}">
+
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-clock me-3 group-hover:text-[#7212E7]"></i>
+                    <span class="group-hover:text-[#7212E7]">Ponto</span>
+                </div>
+
+                <i class="fas fa-chevron-down transition" id="icon-menuPontos"></i>
+            </div>
+
+            <ul id="menuPontos" class="submenu"
+                style="{{ request()->routeIs('pontos.*') ? 'display:block' : '' }}">
+                <li>
+                    <a href="{{ route('pontos.index') }}"
+                       class="nav-link ps-5 py-2 d-flex align-items-center group
+                       {{ request()->routeIs('pontos.index') ? 'text-purple-active' : 'text-gray-sidebar' }}">
+                        <i class="fas fa-play-circle me-2 group-hover:text-[#7212E7]"></i>
+                        <span class="group-hover:text-[#7212E7]">Bater Ponto</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('pontos.registros') }}"
+                       class="nav-link ps-5 py-2 d-flex align-items-center group
+                       {{ request()->routeIs('pontos.registros') ? 'text-purple-active' : 'text-gray-sidebar' }}">
+                        <i class="fas fa-table me-2 group-hover:text-[#7212E7]"></i>
+                        <span class="group-hover:text-[#7212E7]">Registros</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <li class="nav-item">
             <a href="{{ route('balcao') }}"
                class="nav-link {{ request()->routeIs('balcao') ? 'active bg-purple-sidebar text-purple-active' : 'bg-white text-gray-sidebar' }} px-4 py-3 d-flex align-items-center group"
                style="{{ request()->routeIs('balcao') ? 'border-left: 4px solid #7212E7; color: #7212E7;' : '' }}">

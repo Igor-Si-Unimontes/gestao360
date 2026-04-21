@@ -41,4 +41,9 @@ class User extends Authenticable
     {
         return $this->belongsTo(Role::class);
     }
+
+    public function pontos()
+    {
+        return $this->hasMany(Ponto::class, 'usuario_id');
+    }
 }
