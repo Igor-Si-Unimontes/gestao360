@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR" class="h-100">
+<html lang="pt-BR" class="h-100 dashboard-shell">
 
 <head>
     <meta charset="UTF-8">
@@ -24,21 +24,21 @@
     @vite(['resources/css/app.css', 'resources/css/appbs.css', 'resources/js/app.js', 'resources/fontawesome/all.min.js'])
 </head>
 
-<body style="background-color: #f5f5f5; font-family: 'Montserrat', sans-serif;" class="h-100">
+<body style="background-color: #f5f5f5; font-family: 'Montserrat', sans-serif;" class="h-100 dashboard-shell-body">
 
-    <div class="container-fluid p-0">
-        <div class="row g-0">
-            <nav class="col-md-3 col-lg-2 d-md-block bg-white sidebar p-0 vh-100">
-                <div class="position-sticky d-flex flex-column h-100">
-                    <div class="d-flex justify-content-between align-items-center p-3">
+    <div class="container-fluid p-0 h-100 min-h-0 dashboard-shell-root d-flex flex-column">
+        <div class="row g-0 flex-grow-1 min-h-0 w-100 mx-0">
+            <nav class="col-12 col-md-3 col-lg-2 bg-white sidebar p-0 d-flex flex-column h-100 min-h-0" aria-label="Menu principal">
+                <div class="d-flex flex-column h-100 min-h-0">
+                    <div class="d-flex justify-content-between align-items-center p-3 flex-shrink-0">
                         <img src="{{ asset('images/logo.webp') }}" alt="logo">
                     </div>
 
-                    <div class="flex-grow-1 overflow-auto p-1">
+                    <div class="flex-grow-1 overflow-y-auto overflow-x-hidden p-1 min-h-0">
                         <x-dashboard-nav />
                     </div>
 
-                    <div class="border-top mt-4">
+                    <div class="border-top mt-4 flex-shrink-0">
                         <a href="{{ route('logout') }}"
                             class="d-flex align-items-center gap-3 p-3 rounded bg-red-sidebar text-red text-decoration-none"
                             style="font-size: 1.1rem;">
@@ -49,9 +49,9 @@
                 </div>
             </nav>
 
-            <div class="col-md-9 ms-sm-auto col-lg-10 d-flex flex-column vh-100">
+            <div class="col-12 col-md-9 col-lg-10 d-flex flex-column h-100 min-h-0">
 
-                <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+                <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom flex-shrink-0">
                     <div class="container-fluid px-4 p-3" style="margin-right: 25px ">
                         <div class="d-flex align-items-center ms-auto">
                             <div class="text-end me-3">
@@ -72,10 +72,12 @@
                     </div>
                 </nav>
 
-                <div class="container-fluid">
-                    @yield('content')
-                    @yield('styles')
-                    @yield('scripts')
+                <div class="dashboard-main-scroll flex-grow-1 overflow-y-auto overflow-x-hidden min-h-0">
+                    <div class="container-fluid pb-4">
+                        @yield('content')
+                        @yield('styles')
+                        @yield('scripts')
+                    </div>
                 </div>
 
             </div>
@@ -118,6 +120,32 @@
     @endif
 
     <style>
+        /*
+         * md+: a página inteira não rola — só .dashboard-main-scroll.
+         * Assim o menu lateral permanece fixo na viewport; só o conteúdo interno se move.
+         */
+        @media (min-width: 768px) {
+            html.dashboard-shell,
+            html.dashboard-shell body.dashboard-shell-body {
+                height: 100vh;
+                max-height: 100vh;
+                overflow: hidden;
+            }
+
+            body.dashboard-shell-body {
+                display: flex;
+                flex-direction: column;
+                min-height: 0;
+            }
+
+            .dashboard-shell-root {
+                flex: 1 1 auto;
+                min-height: 0;
+                max-height: 100%;
+                overflow: hidden;
+            }
+        }
+
         #toast-container {
             top: 70px !important;
             z-index: 99999 !important;
