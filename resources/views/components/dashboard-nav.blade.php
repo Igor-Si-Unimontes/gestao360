@@ -184,6 +184,14 @@
                 <span class="group-hover:text-[#7212E7]">Taxa de Entrega</span>
             </a>
         </li>
+         <li class="nav-item">
+            <a href="{{ route('relatorios.index') }}"
+               class="nav-link {{ request()->routeIs('relatorios.*') ? 'active bg-purple-sidebar text-purple-active' : 'bg-white text-gray-sidebar' }} px-4 py-3 d-flex align-items-center group"
+               style="{{ request()->routeIs('relatorios.*') ? 'border-left: 4px solid #7212E7; color: #7212E7;' : '' }}">
+                <i class="fas fa-chart-pie me-3" style="{{ request()->routeIs('relatorios.*') ? 'color:#7212E7;' : '' }}"></i>
+                <span>Relatórios</span>
+            </a>
+        </li>
     </ul>
 </nav>
 

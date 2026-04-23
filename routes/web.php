@@ -3,24 +3,23 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BairrosController;
 use App\Http\Controllers\BalcaoController;
-use App\Http\Controllers\CozinhaController;
 use App\Http\Controllers\BatchController;
-use App\Http\Controllers\MesaController;
-use App\Http\Controllers\PedidoController;
-use App\Http\Controllers\OcorrenciaController;
-use App\Http\Controllers\PontoController;
-use App\Http\Controllers\VendaController;
 use App\Http\Controllers\CaixaController;
-use App\Http\Controllers\SangriaController;
 use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\UserController;
-use Illuminate\Routing\Router;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CozinhaController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\FiscalController;
+use App\Http\Controllers\MesaController;
+use App\Http\Controllers\OcorrenciaController;
+use App\Http\Controllers\PedidoController;
+use App\Http\Controllers\PontoController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\RelatorioController;
+use App\Http\Controllers\SangriaController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\VendaController;
+use Illuminate\Support\Facades\Route;
 
 // Rotas para usuários não autenticados
 Route::middleware('guest')->group(function () {
@@ -37,9 +36,7 @@ Route::middleware('guest')->group(function () {
     Route::get('/reset_password/{token}', [AuthController::class, 'resetPassword'])->name('resetPassword');
     Route::post('/reset_password', [AuthController::class, 'resetPasswordUpdate'])->name('resetPasswordUpdate');
 
-
 });
-
 
 // Rota para usuários autenticados
 Route::middleware('auth')->group(function () {
@@ -54,25 +51,25 @@ Route::middleware('auth')->group(function () {
     Route::get('/funcionarios/{id}/edit', [EmployeeController::class, 'edit'])->name('employees.edit');
     Route::patch('/funcionarios/{id}', [EmployeeController::class, 'update'])->name('employees.update');
     Route::delete('/funcionarios/{id}', [EmployeeController::class, 'destroy'])->name('employees.destroy');
-    //Categories
+    // Categories
     Route::resource('categories', CategoryController::class);
     Route::patch('/categories/{id}/status', [CategoryController::class, 'updateStatus'])->name('categories.updateStatus');
-    //Suppliers
+    // Suppliers
     Route::resource('suppliers', SupplierController::class);
-    //Products
+    // Products
     Route::resource('produtos', ProductController::class);
-    //Batches
+    // Batches
     Route::get('/lotes/create/{product}', [BatchController::class, 'create'])->name('lotes.create');
     Route::post('/lotes/{product}', [BatchController::class, 'store'])->name('lotes.store');
     Route::resource('lotes', BatchController::class)
-    ->parameters(['lotes' => 'batch'])
-    ->except(['create', 'store']);
+        ->parameters(['lotes' => 'batch'])
+        ->except(['create', 'store']);
     Route::patch('/lotes/{batch}/inativar', [BatchController::class, 'inativandoLote'])->name('lotes.inativarLote');
     Route::patch('/lotes/{batch}/ativar', [BatchController::class, 'ativandoLote'])->name('lotes.ativarLote');
-    //fiscal
+    // fiscal
     Route::post('/fiscais', [FiscalController::class, 'store'])->name('fiscais.store');
-    Route::put('/fiscais/{fiscal}', [FiscalController::class, 'update'])->name('fiscais.update');  
-    
+    Route::put('/fiscais/{fiscal}', [FiscalController::class, 'update'])->name('fiscais.update');
+
     Route::get('/caixas', [CaixaController::class, 'index'])->name('caixas.index');
     Route::get('/caixas/abrir', [CaixaController::class, 'abrirForm'])->name('caixas.abrir.form');
     Route::post('/caixas/abrir', [CaixaController::class, 'abrir'])->name('caixas.abrir');
@@ -86,6 +83,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/sangrias/{sangria}', [SangriaController::class, 'update'])->name('sangrias.update');
     Route::delete('/sangrias/{sangria}', [SangriaController::class, 'destroy'])->name('sangrias.destroy');
 
+    Route::get('/relatorios', [RelatorioController::class, 'index'])->name('relatorios.index');
+
     Route::get('/ocorrencias', [OcorrenciaController::class, 'index'])->name('ocorrencias.index');
     Route::get('/ocorrencias/create', [OcorrenciaController::class, 'create'])->name('ocorrencias.create');
     Route::post('/ocorrencias', [OcorrenciaController::class, 'store'])->name('ocorrencias.store');
@@ -97,23 +96,23 @@ Route::middleware('auth')->group(function () {
     Route::get('/pontos/registros', [PontoController::class, 'registros'])->name('pontos.registros');
     Route::post('/pontos/abrir', [PontoController::class, 'abrir'])->name('pontos.abrir');
     Route::post('/pontos/fechar', [PontoController::class, 'fechar'])->name('pontos.fechar');
-    
-    //pedidos
+
+    // pedidos
     Route::get('/balcao', [BalcaoController::class, 'index'])->name('balcao');
     Route::post('/vendas', [VendaController::class, 'store'])->name('vendas.store');
 
-    //cozinha
+    // cozinha
     Route::get('/cozinha', [CozinhaController::class, 'index'])->name('cozinha.index');
     Route::get('/cozinha/pedidos', [CozinhaController::class, 'pedidos'])->name('cozinha.pedidos');
     Route::patch('/cozinha/{venda}/pronto', [CozinhaController::class, 'marcarPronto'])->name('cozinha.pronto');
 
-    //historico de pedidos
+    // historico de pedidos
     Route::get('/pedidos', [PedidoController::class, 'index'])->name('pedidos.index');
     Route::get('/pedidos/{pedido}', [PedidoController::class, 'show'])->name('pedidos.show');
     Route::patch('/pedidos/{pedido}/status', [PedidoController::class, 'updateStatus'])->name('pedidos.status');
     Route::delete('/pedidos/{pedido}', [PedidoController::class, 'destroy'])->name('pedidos.destroy');
 
-    //mesas
+    // mesas
     Route::get('/mesas', [MesaController::class, 'index'])->name('mesas.index');
     Route::post('/mesas/{mesa}/abrir', [MesaController::class, 'abrirMesa'])->name('mesas.abrir');
     Route::get('/mesas/{mesa}/comanda', [MesaController::class, 'comanda'])->name('mesas.comanda');
@@ -123,18 +122,17 @@ Route::middleware('auth')->group(function () {
     Route::post('/mesas/{mesa}/fechar', [MesaController::class, 'fecharMesa'])->name('mesas.fechar');
     Route::post('/mesas/{mesa}/cancelar', [MesaController::class, 'cancelarMesa'])->name('mesas.cancelar');
 
-    //taxa entrega
+    // taxa entrega
     Route::resource('bairros', BairrosController::class);
-    //outra rota
+    // outra rota
     Route::get('/profile', function () {
         return view('auth.profile');
     })->name('profile');
 
     Route::post('/profile/change_password', [UserController::class, 'changePassword'])->name('profile.change_password');
 
-
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    Route::post("/delete_account", [UserController::class, 'deleteAccount'])->name('deleteAccount');
+    Route::post('/delete_account', [UserController::class, 'deleteAccount'])->name('deleteAccount');
 
 });
