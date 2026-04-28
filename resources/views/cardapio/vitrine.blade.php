@@ -65,8 +65,5 @@
             @endforeach
         @endif
 
-        <p class="text-center text-muted small mt-5 mb-0">
-            Valores e fotos ilustrativos — cardápio apenas visual.
-        </p>
     </main>
 @endsection
