@@ -22,7 +22,7 @@
                     @foreach ($breadcrumbs as $breadcrumb)
                         <li class="breadcrumb-item d-flex align-items-center">
                             @if (!empty($breadcrumb['route']))
-                                <a href="{{ route($breadcrumb['route']) }}" class="text-dark text-decoration-none">
+                                <a href="{{ route($breadcrumb['route'], $breadcrumb['params'] ?? []) }}" class="text-dark text-decoration-none">
                                     {{ $breadcrumb['name'] }}
                                 </a>
                             @else

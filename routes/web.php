@@ -5,6 +5,8 @@ use App\Http\Controllers\BairrosController;
 use App\Http\Controllers\BalcaoController;
 use App\Http\Controllers\BatchController;
 use App\Http\Controllers\CaixaController;
+use App\Http\Controllers\CardapioController;
+use App\Http\Controllers\CardapioItemController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CozinhaController;
 use App\Http\Controllers\EmployeeController;
@@ -20,6 +22,9 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VendaController;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/menu', [CardapioController::class, 'vitrine'])->name('cardapio.menu');
+Route::get('/vitrine-cardapio/{cardapio}', fn () => redirect()->route('cardapio.menu', [], 301));
 
 // Rotas para usuários não autenticados
 Route::middleware('guest')->group(function () {
@@ -58,6 +63,16 @@ Route::middleware('auth')->group(function () {
     Route::resource('suppliers', SupplierController::class);
     // Products
     Route::resource('produtos', ProductController::class);
+
+    Route::get('/cardapio/itens', [CardapioItemController::class, 'index'])->name('cardapio.itens.index');
+    Route::get('/cardapio/itens/criar', [CardapioItemController::class, 'create'])->name('cardapio.itens.create');
+    Route::post('/cardapio/itens', [CardapioItemController::class, 'store'])->name('cardapio.itens.store');
+    Route::get('/cardapio/itens/{item}/editar', [CardapioItemController::class, 'edit'])->name('cardapio.itens.edit');
+    Route::put('/cardapio/itens/{item}', [CardapioItemController::class, 'update'])->name('cardapio.itens.update');
+    Route::delete('/cardapio/itens/{item}', [CardapioItemController::class, 'destroy'])->name('cardapio.itens.destroy');
+
+    Route::get('/cardapio/dados', [CardapioController::class, 'dados'])->name('cardapio.dados');
+    Route::put('/cardapio/dados', [CardapioController::class, 'atualizarDados'])->name('cardapio.dados.update');
     // Batches
     Route::get('/lotes/create/{product}', [BatchController::class, 'create'])->name('lotes.create');
     Route::post('/lotes/{product}', [BatchController::class, 'store'])->name('lotes.store');

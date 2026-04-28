@@ -22,12 +22,12 @@
         <li class="nav-item">
 
             <div class="nav-link px-4 py-3 d-flex justify-content-between align-items-center 
-                {{ request()->routeIs('produtos.*') || request()->routeIs('categories.*') || request()->routeIs('suppliers.*') 
+                {{ request()->routeIs('produtos.*') || request()->routeIs('categories.*') || request()->routeIs('suppliers.*') || request()->routeIs('cardapio.*')
                     ? 'active bg-purple-sidebar text-purple-active' 
                     : 'bg-white text-gray-sidebar' }} 
                 group cursor-pointer"
                 onclick="toggleMenu('menuProdutos')"
-                style="{{ request()->routeIs('produtos.*') || request()->routeIs('categories.*') || request()->routeIs('suppliers.*') 
+                style="{{ request()->routeIs('produtos.*') || request()->routeIs('categories.*') || request()->routeIs('suppliers.*') || request()->routeIs('cardapio.*')
                     ? 'border-left: 4px solid #7212E7; color: #7212E7;' 
                     : '' }}">
 
@@ -40,7 +40,7 @@
             </div>
 
             <ul id="menuProdutos" class="submenu"
-                style="{{ request()->routeIs('produtos.*') || request()->routeIs('categories.*') || request()->routeIs('suppliers.*') ? 'display:block' : '' }}">
+                style="{{ request()->routeIs('produtos.*') || request()->routeIs('categories.*') || request()->routeIs('suppliers.*') || request()->routeIs('cardapio.*') ? 'display:block' : '' }}">
 
                 <li>
                     <a href="{{ route('produtos.index') }}"
@@ -66,6 +66,15 @@
                        {{ request()->routeIs('suppliers.*') ? 'text-purple-active' : 'text-gray-sidebar' }}">
                         <i class="fas fa-truck me-2 group-hover:text-[#7212E7]"></i>
                         <span class="group-hover:text-[#7212E7]">Fornecedores</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route('cardapio.itens.index') }}"
+                       class="nav-link ps-5 py-2 d-flex align-items-center group
+                       {{ request()->routeIs('cardapio.*') ? 'text-purple-active' : 'text-gray-sidebar' }}">
+                        <i class="fas fa-book-open me-2 group-hover:text-[#7212E7]"></i>
+                        <span class="group-hover:text-[#7212E7]">Cardápio visual</span>
                     </a>
                 </li>
 
