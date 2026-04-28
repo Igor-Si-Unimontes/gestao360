@@ -20,7 +20,7 @@
         @endif
         <div class="card border-0 shadow-sm">
             <div class="card-body p-4">
-                <p class="text-muted small mb-4">Exibidos no topo da vitrine pública (<code>/menu</code>).</p>
+                <p class="text-muted small mb-4">Exibidos no topo do cardápio (<code>/menu</code>).</p>
                 <form method="post" action="{{ route('cardapio.dados.update') }}">
                     @csrf
                     @method('PUT')

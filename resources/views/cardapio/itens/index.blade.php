@@ -10,7 +10,7 @@
             </a>
             <a href="{{ route('cardapio.menu') }}" class="btn btn-outline-primary btn-sm" target="_blank"
                 rel="noopener noreferrer">
-                <i class="fas fa-tv me-1"></i> Vitrine pública
+                <i class="fas fa-tv me-1"></i> Ver cardápio
             </a>
             <a href="{{ route('cardapio.itens.create') }}" class="btn btn-purple-main text-white btn-sm">
                 <i class="fas fa-plus me-1"></i> Novo item

@@ -62,7 +62,7 @@
         <div class="form-check form-switch">
             <input class="form-check-input" type="checkbox" name="visivel" value="1" id="visivel"
                    @checked(old('visivel', $i ? ($i->visivel ? '1' : '0') : '1') === '1')>
-            <label class="form-check-label" for="visivel">Visível na vitrine pública</label>
+            <label class="form-check-label" for="visivel">Visível no cardápio</label>
         </div>
         <p class="text-muted small mb-0">Desmarcado: o item continua salvo, mas não aparece em <code>/menu</code>.</p>
     </div>
