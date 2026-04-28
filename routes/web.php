@@ -9,6 +9,7 @@ use App\Http\Controllers\CardapioController;
 use App\Http\Controllers\CardapioItemController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CozinhaController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\FiscalController;
 use App\Http\Controllers\MesaController;
@@ -45,9 +46,7 @@ Route::middleware('guest')->group(function () {
 
 // Rota para usuários autenticados
 Route::middleware('auth')->group(function () {
-    Route::get('/', function () {
-        return view('home');
-    })->name('dashboard');
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     // Employees
     Route::get('/funcionarios', [EmployeeController::class, 'index'])->name('employees.index');
