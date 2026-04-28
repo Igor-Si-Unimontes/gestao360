@@ -74,7 +74,7 @@
                        class="nav-link ps-5 py-2 d-flex align-items-center group
                        {{ request()->routeIs('cardapio.*') ? 'text-purple-active' : 'text-gray-sidebar' }}">
                         <i class="fas fa-book-open me-2 group-hover:text-[#7212E7]"></i>
-                        <span class="group-hover:text-[#7212E7]">Cardápio visual</span>
+                        <span class="group-hover:text-[#7212E7]">Cardápio</span>
                     </a>
                 </li>
 
