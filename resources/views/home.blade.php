@@ -25,115 +25,124 @@
             @endif
         </div>
 
-        <div class="row g-3 mb-4">
+        @if ($isAdmin)
 
-            <div class="col-12 col-md-4">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center justify-content-between mb-3">
-                            <span class="text-muted small fw-semibold text-uppercase">Hoje</span>
-                            <span class="rounded-circle d-flex align-items-center justify-content-center"
-                                  style="width:2.5rem;height:2.5rem;background:#f3efff;">
-                                <i class="fas fa-sun" style="color:#7212E7;"></i>
-                            </span>
-                        </div>
-                        <div class="fw-bold" style="font-size:1.7rem;color:#7212E7;">
-                            R$ {{ number_format($vendasHoje['total'], 2, ',', '.') }}
-                        </div>
-                        <div class="text-muted small mt-1">{{ $vendasHoje['quantidade'] }} pedido(s) finalizado(s)</div>
-                        @if ($topHoje)
-                            <div class="mt-3 pt-3 border-top d-flex align-items-center gap-2">
-                                <i class="fas fa-trophy text-warning small"></i>
-                                <span class="small"><strong>+ vendido:</strong> {{ $topHoje->produto->name ?? '—' }}
-                                    <span class="text-muted">({{ number_format((float)$topHoje->qtd, 0, ',', '.') }}×)</span>
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-md-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <span class="text-muted small fw-semibold text-uppercase">Hoje</span>
+                                <span class="rounded-circle d-flex align-items-center justify-content-center"
+                                      style="width:2.5rem;height:2.5rem;background:#f3efff;">
+                                    <i class="fas fa-sun" style="color:#7212E7;"></i>
                                 </span>
                             </div>
-                        @endif
+                            <div class="fw-bold" style="font-size:1.7rem;color:#7212E7;">
+                                R$ {{ number_format($vendasHoje['total'], 2, ',', '.') }}
+                            </div>
+                            <div class="text-muted small mt-1">{{ $vendasHoje['quantidade'] }} pedido(s) finalizado(s)</div>
+                            @if ($topHoje)
+                                <div class="mt-3 pt-3 border-top d-flex align-items-center gap-2">
+                                    <i class="fas fa-trophy text-warning small"></i>
+                                    <span class="small"><strong>+ vendido:</strong> {{ $topHoje->produto->name ?? '—' }}
+                                        <span class="text-muted">({{ number_format((float)$topHoje->qtd, 0, ',', '.') }}×)</span>
+                                    </span>
+                                </div>
+                            @endif
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="col-12 col-md-4">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center justify-content-between mb-3">
-                            <span class="text-muted small fw-semibold text-uppercase">Esta semana</span>
-                            <span class="rounded-circle d-flex align-items-center justify-content-center"
-                                  style="width:2.5rem;height:2.5rem;background:#f3efff;">
-                                <i class="fas fa-calendar-week" style="color:#7212E7;"></i>
-                            </span>
-                        </div>
-                        <div class="fw-bold" style="font-size:1.7rem;color:#7212E7;">
-                            R$ {{ number_format($vendasSemana['total'], 2, ',', '.') }}
-                        </div>
-                        <div class="text-muted small mt-1">{{ $vendasSemana['quantidade'] }} pedido(s) finalizado(s)</div>
-                        @if ($topSemana)
-                            <div class="mt-3 pt-3 border-top d-flex align-items-center gap-2">
-                                <i class="fas fa-trophy text-warning small"></i>
-                                <span class="small"><strong>+ vendido:</strong> {{ $topSemana->produto->name ?? '—' }}
-                                    <span class="text-muted">({{ number_format((float)$topSemana->qtd, 0, ',', '.') }}×)</span>
+                <div class="col-12 col-md-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <span class="text-muted small fw-semibold text-uppercase">Esta semana</span>
+                                <span class="rounded-circle d-flex align-items-center justify-content-center"
+                                      style="width:2.5rem;height:2.5rem;background:#f3efff;">
+                                    <i class="fas fa-calendar-week" style="color:#7212E7;"></i>
                                 </span>
                             </div>
-                        @endif
+                            <div class="fw-bold" style="font-size:1.7rem;color:#7212E7;">
+                                R$ {{ number_format($vendasSemana['total'], 2, ',', '.') }}
+                            </div>
+                            <div class="text-muted small mt-1">{{ $vendasSemana['quantidade'] }} pedido(s) finalizado(s)</div>
+                            @if ($topSemana)
+                                <div class="mt-3 pt-3 border-top d-flex align-items-center gap-2">
+                                    <i class="fas fa-trophy text-warning small"></i>
+                                    <span class="small"><strong>+ vendido:</strong> {{ $topSemana->produto->name ?? '—' }}
+                                        <span class="text-muted">({{ number_format((float)$topSemana->qtd, 0, ',', '.') }}×)</span>
+                                    </span>
+                                </div>
+                            @endif
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="col-12 col-md-4">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center justify-content-between mb-3">
-                            <span class="text-muted small fw-semibold text-uppercase">Este mês</span>
-                            <span class="rounded-circle d-flex align-items-center justify-content-center"
-                                  style="width:2.5rem;height:2.5rem;background:#f3efff;">
-                                <i class="fas fa-calendar-alt" style="color:#7212E7;"></i>
-                            </span>
-                        </div>
-                        <div class="fw-bold" style="font-size:1.7rem;color:#7212E7;">
-                            R$ {{ number_format($vendasMes['total'], 2, ',', '.') }}
-                        </div>
-                        <div class="text-muted small mt-1">{{ $vendasMes['quantidade'] }} pedido(s) finalizado(s)</div>
-                        @if ($topMes)
-                            <div class="mt-3 pt-3 border-top d-flex align-items-center gap-2">
-                                <i class="fas fa-trophy text-warning small"></i>
-                                <span class="small"><strong>+ vendido:</strong> {{ $topMes->produto->name ?? '—' }}
-                                    <span class="text-muted">({{ number_format((float)$topMes->qtd, 0, ',', '.') }}×)</span>
+                <div class="col-12 col-md-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <span class="text-muted small fw-semibold text-uppercase">Este mês</span>
+                                <span class="rounded-circle d-flex align-items-center justify-content-center"
+                                      style="width:2.5rem;height:2.5rem;background:#f3efff;">
+                                    <i class="fas fa-calendar-alt" style="color:#7212E7;"></i>
                                 </span>
                             </div>
-                        @endif
+                            <div class="fw-bold" style="font-size:1.7rem;color:#7212E7;">
+                                R$ {{ number_format($vendasMes['total'], 2, ',', '.') }}
+                            </div>
+                            <div class="text-muted small mt-1">{{ $vendasMes['quantidade'] }} pedido(s) finalizado(s)</div>
+                            @if ($topMes)
+                                <div class="mt-3 pt-3 border-top d-flex align-items-center gap-2">
+                                    <i class="fas fa-trophy text-warning small"></i>
+                                    <span class="small"><strong>+ vendido:</strong> {{ $topMes->produto->name ?? '—' }}
+                                        <span class="text-muted">({{ number_format((float)$topMes->qtd, 0, ',', '.') }}×)</span>
+                                    </span>
+                                </div>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="row g-3 mb-4">
-            <div class="col-12 col-lg-6">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-header bg-white border-bottom py-3">
-                        <h6 class="mb-0 fw-semibold">
-                            <i class="fas fa-chart-bar me-1" style="color:#7212E7;"></i>
-                            Vendas por hora — hoje
-                        </h6>
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-lg-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-white border-bottom py-3">
+                            <h6 class="mb-0 fw-semibold">
+                                <i class="fas fa-chart-bar me-1" style="color:#7212E7;"></i>
+                                Vendas por hora — hoje
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="graficoHoras" height="200"></canvas>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <canvas id="graficoHoras" height="200"></canvas>
+                </div>
+                <div class="col-12 col-lg-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-white border-bottom py-3">
+                            <h6 class="mb-0 fw-semibold">
+                                <i class="fas fa-chart-line me-1" style="color:#7212E7;"></i>
+                                Faturamento diário — esta semana
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="graficoDias" height="200"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-12 col-lg-6">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-header bg-white border-bottom py-3">
-                        <h6 class="mb-0 fw-semibold">
-                            <i class="fas fa-chart-line me-1" style="color:#7212E7;"></i>
-                            Faturamento diário — esta semana
-                        </h6>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="graficoDias" height="200"></canvas>
-                    </div>
-                </div>
+
+        @else
+            <div class="alert d-flex align-items-center gap-3 mb-4" style="background:#f3efff;border:1px solid #d4b5ff;">
+                <i class="fas fa-info-circle fs-5" style="color:#7212E7;"></i>
+                <span class="small">Bem-vindo(a), <strong>{{ auth()->user()->first_name }}</strong>! Confira abaixo os pontos registrados hoje.</span>
             </div>
-        </div>
+        @endif
+
 
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-white border-bottom py-3 d-flex align-items-center justify-content-between">
@@ -141,9 +150,11 @@
                     <i class="fas fa-user-clock me-1" style="color:#7212E7;"></i>
                     Ponto dos funcionários — hoje
                 </h6>
-                <a href="{{ route('pontos.registros') }}" class="btn btn-outline-secondary btn-sm">
-                    Ver todos
-                </a>
+                @if ($isAdmin)
+                    <a href="{{ route('pontos.registros') }}" class="btn btn-outline-secondary btn-sm">
+                        Ver todos
+                    </a>
+                @endif
             </div>
             <div class="card-body p-0">
                 @if ($pontosHoje->isEmpty())
@@ -194,16 +205,13 @@
 
     </div>
 
+    @if ($isAdmin)
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     <script>
-        const purple = '#7212E7';
+        const purple      = '#7212E7';
         const purpleLight = 'rgba(114,18,231,0.12)';
-        const purpleMid  = 'rgba(114,18,231,0.7)';
-
-        const defaultFont = {
-            family: "'Montserrat', sans-serif",
-            size: 11,
-        };
+        const purpleMid   = 'rgba(114,18,231,0.7)';
+        const defaultFont = { family: "'Montserrat', sans-serif", size: 11 };
 
         new Chart(document.getElementById('graficoHoras'), {
             type: 'bar',
@@ -221,12 +229,7 @@
                 responsive: true,
                 plugins: {
                     legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            title: ctx => ctx[0].label,
-                            label: ctx => ctx.parsed.y + ' pedido(s)',
-                        }
-                    }
+                    tooltip: { callbacks: { label: ctx => ctx.parsed.y + ' pedido(s)' } }
                 },
                 scales: {
                     x: { ticks: { font: defaultFont, maxRotation: 45, minRotation: 45 }, grid: { display: false } },
@@ -255,19 +258,12 @@
                 responsive: true,
                 plugins: {
                     legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            label: ctx => 'R$ ' + ctx.parsed.y.toLocaleString('pt-BR', { minimumFractionDigits: 2 }),
-                        }
-                    }
+                    tooltip: { callbacks: { label: ctx => 'R$ ' + ctx.parsed.y.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) } }
                 },
                 scales: {
                     x: { ticks: { font: defaultFont }, grid: { display: false } },
                     y: {
-                        ticks: {
-                            font: defaultFont,
-                            callback: v => 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 0 }),
-                        },
+                        ticks: { font: defaultFont, callback: v => 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 0 }) },
                         beginAtZero: true,
                         grid: { color: '#f0f0f0' },
                     },
@@ -275,4 +271,5 @@
             }
         });
     </script>
+    @endif
 @endsection

@@ -156,6 +156,11 @@
             background-color: #EABDBD;
             color: #222222;
         }
+
+        .role-cozinha {
+            background-color: #BBF0D6;
+            color: #1a4731;
+        }
     </style>
 @endsection
 
@@ -170,6 +175,7 @@
                 'garcom': 'role-garcom',
                 'caixa': 'role-caixa',
                 'atendente': 'role-atendente',
+                'cozinha': 'role-cozinha',
             };
 
             function updateBadge() {

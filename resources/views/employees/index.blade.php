@@ -150,6 +150,11 @@
             background-color: #EABDBD;
             color: #222222;
         }
+
+        .role-cozinha {
+            background-color: #BBF0D6;
+            color: #1a4731;
+        }
     </style>
 @endsection
 

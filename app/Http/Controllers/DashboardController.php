@@ -13,19 +13,32 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        $isAdmin = auth()->user()->hasRole('Administrador');
         $hoje = Carbon::today();
+
+        $pontosHoje = Ponto::with('usuario')
+            ->whereDate('entrada_em', $hoje)
+            ->orderBy('entrada_em')
+            ->get();
+
+        $caixaAberto = Caixa::aberto();
+
+        if (! $isAdmin) {
+            return view('home', compact('pontosHoje', 'caixaAberto', 'isAdmin'));
+        }
+
         $inicioSemana = Carbon::now()->startOfWeek();
-        $fimSemana = Carbon::now()->endOfWeek();
-        $inicioMes = Carbon::now()->startOfMonth();
-        $fimMes = Carbon::now()->endOfMonth();
+        $fimSemana    = Carbon::now()->endOfWeek();
+        $inicioMes    = Carbon::now()->startOfMonth();
+        $fimMes       = Carbon::now()->endOfMonth();
 
-        $vendasHoje = $this->resumo($hoje, $hoje);
+        $vendasHoje   = $this->resumo($hoje, $hoje);
         $vendasSemana = $this->resumo($inicioSemana, $fimSemana);
-        $vendasMes = $this->resumo($inicioMes, $fimMes);
+        $vendasMes    = $this->resumo($inicioMes, $fimMes);
 
-        $topHoje = $this->topProduto($hoje, $hoje);
+        $topHoje   = $this->topProduto($hoje, $hoje);
         $topSemana = $this->topProduto($inicioSemana, $fimSemana);
-        $topMes = $this->topProduto($inicioMes, $fimMes);
+        $topMes    = $this->topProduto($inicioMes, $fimMes);
 
         $vendasPorHora = Venda::query()
             ->where('status', 'FINALIZADA')
@@ -37,12 +50,12 @@ class DashboardController extends Controller
             ->keyBy('hora');
 
         $horasLabels = [];
-        $horasQtd = [];
-        $horasTotal = [];
+        $horasQtd    = [];
+        $horasTotal  = [];
         for ($h = 0; $h <= 23; $h++) {
             $horasLabels[] = str_pad($h, 2, '0', STR_PAD_LEFT).':00';
-            $horasQtd[] = (int) ($vendasPorHora->get($h)->qtd ?? 0);
-            $horasTotal[] = (float) ($vendasPorHora->get($h)->total ?? 0);
+            $horasQtd[]    = (int) ($vendasPorHora->get($h)->qtd ?? 0);
+            $horasTotal[]  = (float) ($vendasPorHora->get($h)->total ?? 0);
         }
 
         $vendasPorDia = Venda::query()
@@ -54,43 +67,27 @@ class DashboardController extends Controller
             ->get()
             ->keyBy('dia');
 
-        $diasNomes = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+        $diasNomes  = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
         $diasLabels = [];
-        $diasQtd = [];
-        $diasTotal = [];
+        $diasQtd    = [];
+        $diasTotal  = [];
         for ($d = 0; $d < 7; $d++) {
-            $data = $inicioSemana->copy()->addDays($d);
-            $key = $data->format('Y-m-d');
+            $data         = $inicioSemana->copy()->addDays($d);
+            $key          = $data->format('Y-m-d');
             $diasLabels[] = $diasNomes[$d].' '.$data->format('d');
-            $diasQtd[] = (int) ($vendasPorDia->get($key)->qtd ?? 0);
-            $diasTotal[] = (float) ($vendasPorDia->get($key)->total ?? 0);
+            $diasQtd[]    = (int) ($vendasPorDia->get($key)->qtd ?? 0);
+            $diasTotal[]  = (float) ($vendasPorDia->get($key)->total ?? 0);
         }
 
-        $caixaAberto = Caixa::aberto();
-
-        $pontosHoje = Ponto::with('usuario')
-            ->whereDate('entrada_em', $hoje)
-            ->orderBy('entrada_em')
-            ->get();
-
         return view('home', compact(
-            'vendasHoje',
-            'vendasSemana',
-            'vendasMes',
-            'topHoje',
-            'topSemana',
-            'topMes',
-            'horasLabels',
-            'horasQtd',
-            'horasTotal',
-            'diasLabels',
-            'diasQtd',
-            'diasTotal',
-            'caixaAberto',
-            'pontosHoje',
+            'isAdmin',
+            'vendasHoje', 'vendasSemana', 'vendasMes',
+            'topHoje', 'topSemana', 'topMes',
+            'horasLabels', 'horasQtd', 'horasTotal',
+            'diasLabels', 'diasQtd', 'diasTotal',
+            'caixaAberto', 'pontosHoje',
         ));
     }
-
 
     private function resumo(Carbon $inicio, Carbon $fim): array
     {
@@ -100,7 +97,7 @@ class DashboardController extends Controller
 
         return [
             'quantidade' => $base()->count(),
-            'total' => (float) $base()->sum('valor_total'),
+            'total'      => (float) $base()->sum('valor_total'),
         ];
     }
 
@@ -119,8 +116,7 @@ class DashboardController extends Controller
             return null;
         }
 
-        $produto = Product::find($row->produto_id);
-        $row->produto = $produto;
+        $row->produto = Product::find($row->produto_id);
 
         return $row;
     }
