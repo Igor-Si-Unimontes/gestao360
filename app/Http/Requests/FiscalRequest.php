@@ -25,9 +25,9 @@ class FiscalRequest extends FormRequest
         $isUpdate = $this->method() === 'PUT' || $this->method() === 'PATCH';
 
         return [
-            'product_id' => $isUpdate 
-                ? 'sometimes|exists:products,id'
-                : 'required|exists:products,id',
+            'product_id' => $isUpdate
+            ? 'required|exists:products,id'
+            : 'nullable',
 
             'cProd' => 'nullable|string|max:60',
             'cEAN' => 'nullable|string|min:8|max:14',
